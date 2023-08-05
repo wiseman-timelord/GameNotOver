@@ -16,11 +16,11 @@ It is also intended to be a shortlist for closing those applications, known to h
 
 ## Usage
 
-1. Execute the script to launch the GameNotOver menu.
+1. Execute the batch script to launch the GameNotOver powershell script as Admin.
 2. Utilize the arrow keys to navigate the menu and highlight the desired program for termination.
-3. Press the Enter key to initiate the termination of the selected program.
+3. Press the Enter key to initiate the termination of the selected program(s).
 4. A confirmation message will appear, prompting you to press any key to continue.
-5. Select "Exit Menu" to gracefully exit GameNotOver.
+5. Select "Exit Menu" to gracefully exit GameNotOver, or keep the app in the background.
 
 ## Requirements
 
