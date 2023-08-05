@@ -8,7 +8,7 @@ The script is also a framework, that through, analysis of the script and adding/
 When modding games in windows 10, these games would typically leave a residual 500MB-4GB, that would lock mods in place or prevent the game from loading.
 It is also intended to be a shortlist for closing those applications, known to hang and that you use most intensively, saving on manual intervention.
 Programs currently featured in the program are, ChatGPT (LenX), PaintShop Pro, Bannerlord, Kenshi. Check the code, and add/remove lines to preference. 
-This program does not require you to be a programmer to use, but, you must be able to hack code, that is look at it logically, then, cut and paste, and edit, program names and relating menu information.
+This program does not require you to be a programmer to use, but, you must be able to hack code, that is look at it logically, then, cut and paste, and edit, program names and menu information.
 
 ## Features
 
