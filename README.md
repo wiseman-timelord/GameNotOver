@@ -22,12 +22,8 @@ Programs currently featured in the program are, ChatGPT (LenX), PaintShop Pro, B
 3. Press the Enter key to initiate the termination of the selected program(s).
 4. A confirmation message will appear, prompting you to press any key to continue.
 5. Select "Exit Menu" to gracefully exit GameNotOver, or keep the app in the background.
-
-## Easy Access
-This app is intended to make things easier, so you want it at a click of a button.
-1. Create shortcut in folder, edit target box to have "cmd.exe /C" at start.
-2. Drag shortcut to desired place in taskbar, next to, Process Hacker or whatever.
-
+*. For easy access, put the "GameNotOver.lnk" shortcut on your taskbar next to system icons.
+   
 ## Requirements
 
 - Windows 2008 R2, 2012, 8.1, 10 (Powershell)
