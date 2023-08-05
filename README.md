@@ -6,6 +6,7 @@ GameNotOver is a PowerShell application tailored for Windows users, enabling the
 The script is also a framework, that through, analysis of the script and adding/removing lines in 2 loctions, can be customized for your own preference of programs. 
 When modding games in windows 10, these games would typically leave a residual 500MB-4GB, that would lock mods in place or prevent the game from loading.
 It is also intended to be a shortlist for closing those applications, known to hang and that you use most intensively, saving on manual intervention.
+Programs currently featured in the program are, ChatGPT (LenX), PaintShop Pro, Bannerlord, Kenshi. Check the code, and add/remove lines to preference. 
 
 ## Features
 
