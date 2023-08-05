@@ -17,11 +17,16 @@ Programs currently featured in the program are, ChatGPT (LenX), PaintShop Pro, B
 
 ## Usage
 
-1. Execute the batch script to launch the GameNotOver powershell script as Admin.
+1. Execute the batch "GameNotOver.bat" to launch the gamenotover.ps1 powershell script as Admin.
 2. Utilize the arrow keys to navigate the menu and highlight the desired program for termination.
 3. Press the Enter key to initiate the termination of the selected program(s).
 4. A confirmation message will appear, prompting you to press any key to continue.
 5. Select "Exit Menu" to gracefully exit GameNotOver, or keep the app in the background.
+
+## Easy Access
+This app is intended to make things easier, so you want it at a click of a button.
+1. Create shortcut in folder, edit target box to have "cmd.exe /C" at start.
+2. Drag shortcut to desired place in taskbar, next to, Process Hacker or whatever.
 
 ## Requirements
 
