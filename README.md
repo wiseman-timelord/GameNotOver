@@ -5,8 +5,8 @@ Status: Working.
 
 GameNotOver is a PowerShell application tailored for Windows users, enabling them to forcefully close all instances of selected programs through an interactive menu. 
 When using programs in windows 10, upon, exiting or instances of crash, some specific programs typically leave a residual 500MB-4GB, that, lock files in place or prevent loading, for example modding beta games, so this application creates a shortlist for closing those applications, saving on repeatingly, running task manager and searching for running processes.
-The script is also a framework, that through, analysis of the script and adding/removing/editing pre-existing lines in 2 loctions, can be, customized and optimized, for your own preference of programs. 
-Programs currently featured in the program are, ChatGPT (LenX), PaintShop Pro, Bannerlord, Kenshi, they give a good enough demonstration of the code.
+The script is intended to be hacked by the user, so as, through, analysis of the script and adding/removing/editing pre-existing lines in 2 loctions, can be, customized and optimized, for your own preference of programs. 
+Programs currently featured in the program are, ChatGPT (LenX), PaintShop Pro, Bannerlord, Kenshi, they give a good enough demonstration of the format of the code, when you run the app in parallel to editing the code, its not complicated.
 
 ## Features
 
