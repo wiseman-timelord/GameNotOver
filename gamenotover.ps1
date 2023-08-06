@@ -77,7 +77,7 @@ $MenuOptions = @(
     @{ Text = "Kenshi"; Selectable = $true },
     @{ Text = "Mount & Blade 2: BannerLord"; Selectable = $true },
     @{ Text = ""; Selectable = $false },
-    @{ Text = "System:"; Selectable = $false },
+    @{ Text = "Options:"; Selectable = $false },
     @{ Text = "Exit Menu"; Selectable = $true }
 )
 $Selection = $null
