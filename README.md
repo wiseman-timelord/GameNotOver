@@ -15,6 +15,29 @@ Programs currently featured in the program are, ChatGPT (LenX), PaintShop Pro, B
 3. **Robust Error Handling:** Designed to gracefully manage errors, such as unfound processes, ensuring a smooth user experience without abrupt script termination.
 4. **Administrative Privilege Check:** Incorporates a built-in check for administrative rights, guaranteeing that the script has the required permissions to perform its tasks.
 
+## Output
+The app looks like this..
+'''
+
+                GameNotOver!
+
+Please select which programs to terminate..
+
+  A.I.
+      ChatGPT
+
+  Media
+      PaintShop Pro
+
+  Games
+    > Kenshi
+      Mount & Blade 2: BannerLord
+
+  System
+      Exit Menu
+
+'''
+
 ## Usage
 
 1. Execute the batch "GameNotOver.bat" to launch the gamenotover.ps1 powershell script as Admin.
