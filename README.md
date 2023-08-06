@@ -23,8 +23,9 @@ The app looks like this..
 
 Please select which programs to terminate..
 
+
   A.I.
-      ChatGPT
+      ChatGPT (LenX)
 
   Media
       PaintShop Pro
