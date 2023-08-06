@@ -6,6 +6,19 @@ if (-not $isAdmin) {
     Exit
 }
 
+Function TerminateSelectedProcesses {
+    Param(
+        [String[]]$ProcessNames
+    )
+
+    ForEach ($ProcessName in $ProcessNames) {
+        Stop-Process -Name $ProcessName -Force -ErrorAction SilentlyContinue
+    }
+
+    Write-Host "`nSuccessfully terminated, press any key..."
+    $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown") | Out-Null
+}
+
 Function Create-Menu {
     Param(
         [String]$MenuTitle,
@@ -72,29 +85,10 @@ While ($Selection -ne "Exit Menu") {
     $Selection = Create-Menu -MenuTitle $MenuTitle -MenuOptions $MenuOptions
 
     Switch($Selection) {
-        "ChatGPT" {
-            Stop-Process -Name "ChatGPT" -Force -ErrorAction SilentlyContinue
-            Write-Host "`nSuccessfully terminated processes for ChatGPT`nPress any key to continue..."
-            $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown") | Out-Null
-        }
-        "PaintShop Pro" {
-            Stop-Process -Name "Paint Shop Pro 9" -Force -ErrorAction SilentlyContinue
-            Stop-Process -Name "Paint Shop Pro 8" -Force -ErrorAction SilentlyContinue
-            Stop-Process -Name "Corel PaintShop Pro" -Force -ErrorAction SilentlyContinue
-            Write-Host "`nSuccessfully terminated processes for Paint Shop Pro`nPress any key to continue..."
-            $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown") | Out-Null
-        }
-        "Kenshi" {
-            Stop-Process -Name "kenshi_x64" -Force -ErrorAction SilentlyContinue
-            Write-Host "`nSuccessfully terminated processes for Kenshi`nPress any key to continue..."
-            $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown") | Out-Null
-        }
-        "Mount & Blade 2: BannerLord" {
-            Stop-Process -Name "Bannerlord" -Force -ErrorAction SilentlyContinue
-            Stop-Process -Name "Bannerlord.Native" -Force -ErrorAction SilentlyContinue
-            Write-Host "`nSuccessfully terminated processes for Mount & Blade 2: BannerLord`nPress any key to continue..."
-            $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown") | Out-Null
-        }
+        "ChatGPT" { TerminateSelectedProcesses -ProcessNames @("ChatGPT") }
+        "PaintShop Pro" { TerminateSelectedProcesses -ProcessNames @("Paint Shop Pro 9", "Paint Shop Pro 8", "Corel PaintShop Pro") }
+        "Kenshi" { TerminateSelectedProcesses -ProcessNames @("kenshi_x64") }
+        "Mount & Blade 2: BannerLord" { TerminateSelectedProcesses -ProcessNames @("Bannerlord", "Bannerlord.Native") }
         "Exit Menu" { Write-Host "`nExiting GameNotOver..."; Exit }
     }
 }
