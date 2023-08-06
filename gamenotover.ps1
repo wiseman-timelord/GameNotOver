@@ -34,7 +34,6 @@ Function Create-Menu {
         Write-Host "" # Blank line
         Write-Host "Please select which programs to terminate.."
         Write-Host "" # Blank line
-        Write-Host "" # Blank line
 
         For ($i = 0; $i -lt $MenuOptions.Length; $i++) {
             $option = $MenuOptions[$i]
