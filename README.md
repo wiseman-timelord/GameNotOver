@@ -17,7 +17,7 @@ Programs currently featured in the program are, ChatGPT (LenX), PaintShop Pro, B
 
 ## Output
 The app looks like this..
-'''
+"""
 
                 GameNotOver!
 
@@ -36,7 +36,7 @@ Please select which programs to terminate..
   System
       Exit Menu
 
-'''
+"""
 
 ## Usage
 
