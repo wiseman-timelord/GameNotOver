@@ -23,7 +23,6 @@ The app looks like this..
 
 Please select which programs to terminate..
 
-
   A.I.
       ChatGPT (LenX)
 
