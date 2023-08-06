@@ -34,6 +34,7 @@ Function Create-Menu {
         Write-Host "" # Blank line
         Write-Host "Please select which programs to terminate.."
         Write-Host "" # Blank line
+        Write-Host "" # Blank line
 
         For ($i = 0; $i -lt $MenuOptions.Length; $i++) {
             $option = $MenuOptions[$i]
@@ -68,7 +69,7 @@ Function Create-Menu {
 $MenuTitle = "                GameNotOver!"
 $MenuOptions = @(
     @{ Text = "A.I.:"; Selectable = $false },
-    @{ Text = "ChatGPT"; Selectable = $true },
+    @{ Text = "ChatGPT (LenX)"; Selectable = $true },
     @{ Text = ""; Selectable = $false },
     @{ Text = "Media:"; Selectable = $false },
     @{ Text = "PaintShop Pro"; Selectable = $true },
@@ -86,7 +87,7 @@ While ($Selection -ne "Exit Menu") {
     $Selection = Create-Menu -MenuTitle $MenuTitle -MenuOptions $MenuOptions
 
     Switch($Selection) {
-        "ChatGPT" { TerminateSelectedProcesses -ProcessNames @("ChatGPT") }
+        "ChatGPT (LenX)" { TerminateSelectedProcesses -ProcessNames @("ChatGPT") }
         "PaintShop Pro" { TerminateSelectedProcesses -ProcessNames @("Paint Shop Pro 9", "Paint Shop Pro 8", "Corel PaintShop Pro") }
         "Kenshi" { TerminateSelectedProcesses -ProcessNames @("kenshi_x64") }
         "Mount & Blade 2: BannerLord" { TerminateSelectedProcesses -ProcessNames @("Bannerlord", "Bannerlord.Native") }
