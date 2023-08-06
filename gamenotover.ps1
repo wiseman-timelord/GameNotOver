@@ -31,6 +31,7 @@ Function Create-Menu {
         Clear-Host
         Write-Host "" # Blank line
 		Write-Host $MenuTitle
+        Write-Host "" # Blank line
         Write-Host "Please select which programs to terminate.."
         Write-Host "" # Blank line
 
