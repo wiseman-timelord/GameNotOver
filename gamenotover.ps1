@@ -30,7 +30,7 @@ Function Create-Menu {
     While ($true) {
         Clear-Host
         Write-Host "" # Blank line
-		Write-Host $MenuTitle
+        Write-Host $MenuTitle
         Write-Host "" # Blank line
         Write-Host "Please select which programs to terminate.."
         Write-Host "" # Blank line
@@ -41,7 +41,7 @@ Function Create-Menu {
             $isSelectable = $option.Selectable
 
             If ($line -eq "") { Write-Host ""; continue }
-            If ($line -match "^(A.I.|Media|Games|System):") {
+            If ($line -match "^(A.I.|Media|Games|Options):") {
                 Write-Host ("  " + $line.Substring(0, $line.Length - 1))
                 continue
             }
