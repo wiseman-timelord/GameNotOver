@@ -1,3 +1,5 @@
+I want a blank line before the text "GAME NOT OVER!", however, using the "`n" in the line makes the text "GAME NOT OVER!" start from the next line, please implement the correct method for doing this...
+
 # Check for Administrative Privileges
 $currentUser = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
 $isAdmin = $currentUser.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
@@ -49,6 +51,9 @@ Function Create-Menu {
     While ($true) {
         Clear-Host
 
+        # Insert a blank line
+        Write-Host ""
+
         # Center-align the Menu Title
         $padding = [math]::Floor(($host.UI.RawUI.WindowSize.Width - $MenuTitle.Length) / 2)
         $centerAlignedText = (" " * $padding) + $MenuTitle
@@ -89,7 +94,7 @@ Function Create-Menu {
 }
 
 # Menu Options and Main Loop
-$MenuTitle = "`n                     GAME NOT OVER!"
+$MenuTitle = "GAME NOT OVER!"
 $MenuOptions = @(
     @{ Text = "A.I.:-"; Selectable = $false },
     @{ Text = "ChatGPT by LenX"; Selectable = $true },
