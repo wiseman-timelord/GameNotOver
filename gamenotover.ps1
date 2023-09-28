@@ -11,10 +11,10 @@ if (-not $isAdmin) {
 function Set-WindowTitleAndSize {
     param (
         [string]$title = "Default Window Title",
-        [int]$width = 80,
-        [int]$height = 30,
-        [int]$bufferWidth = 80,
-        [int]$bufferHeight = 60
+        [int]$width = 55,
+        [int]$height = 20,
+        [int]$bufferWidth = 55,
+        [int]$bufferHeight = 75
     )
 
     $host.UI.RawUI.WindowTitle = $title
@@ -89,7 +89,7 @@ Function Create-Menu {
 }
 
 # Menu Options and Main Loop
-$MenuTitle = "`n                                 GAME NOT OVER!"
+$MenuTitle = "`n                     GAME NOT OVER!"
 $MenuOptions = @(
     @{ Text = "A.I.:-"; Selectable = $false },
     @{ Text = "ChatGPT by LenX"; Selectable = $true },
