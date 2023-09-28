@@ -24,9 +24,9 @@ Programs currently featured in the program are, ChatGPT (LenX), PaintShop Pro, B
 The app looks like this..
 ```
 
-                                 GAME NOT OVER!
+                     GAME NOT OVER!
 
- Please select which programs to terminate..                                       .
+ Please select which programs to terminate..
 
   A.I.:
       ChatGPT by LenX
@@ -42,14 +42,7 @@ The app looks like this..
       Exit Menu
 
 
-
-
-
-
-
-
-
-
+                                                   .
 ```
 ##
 
