@@ -1,11 +1,29 @@
+# Check for Administrative Privileges
 $currentUser = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
 $isAdmin = $currentUser.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 
 if (-not $isAdmin) {
     Write-Host "This script requires administrative privileges. Please run as an administrator."
-    Exit
+    return
 }
 
+# Function to Resize Window and Set Title
+function Set-WindowTitleAndSize {
+    param (
+        [string]$title = "Default Window Title",
+        [int]$width = 80,
+        [int]$height = 30,
+        [int]$bufferWidth = 80,
+        [int]$bufferHeight = 60
+    )
+
+    $host.UI.RawUI.WindowTitle = $title
+    $host.UI.RawUI.WindowSize = New-Object System.Management.Automation.Host.Size($width, $height)
+    $host.UI.RawUI.BufferSize = New-Object System.Management.Automation.Host.Size($bufferWidth, $bufferHeight)
+}
+Set-WindowTitleAndSize -title "GameNotOver!"
+
+# Function to Terminate Selected Processes
 Function TerminateSelectedProcesses {
     Param(
         [String[]]$ProcessNames
@@ -19,6 +37,7 @@ Function TerminateSelectedProcesses {
     $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown") | Out-Null
 }
 
+# Function to Create and Display Menu
 Function Create-Menu {
     Param(
         [String]$MenuTitle,
@@ -29,10 +48,14 @@ Function Create-Menu {
 
     While ($true) {
         Clear-Host
+
+        # Center-align the Menu Title
+        $padding = [math]::Floor(($host.UI.RawUI.WindowSize.Width - $MenuTitle.Length) / 2)
+        $centerAlignedText = (" " * $padding) + $MenuTitle
+        Write-Host $centerAlignedText
+
         Write-Host "" # Blank line
-        Write-Host $MenuTitle
-        Write-Host "" # Blank line
-        Write-Host "Please select which programs to terminate.."
+        Write-Host " Please select which programs to terminate.."
         Write-Host "" # Blank line
 
         For ($i = 0; $i -lt $MenuOptions.Length; $i++) {
@@ -65,19 +88,20 @@ Function Create-Menu {
     }
 }
 
-$MenuTitle = "                GameNotOver!"
+# Menu Options and Main Loop
+$MenuTitle = "`n                                 GAME NOT OVER!"
 $MenuOptions = @(
-    @{ Text = "A.I.:"; Selectable = $false },
-    @{ Text = "ChatGPT (LenX)"; Selectable = $true },
+    @{ Text = "A.I.:-"; Selectable = $false },
+    @{ Text = "ChatGPT by LenX"; Selectable = $true },
     @{ Text = ""; Selectable = $false },
-    @{ Text = "Media:"; Selectable = $false },
-    @{ Text = "PaintShop Pro"; Selectable = $true },
+    @{ Text = "Media:-"; Selectable = $false },
+    @{ Text = "Corel/Jasc PaintShop Pro"; Selectable = $true },
     @{ Text = ""; Selectable = $false },
-    @{ Text = "Games:"; Selectable = $false },
-    @{ Text = "Kenshi"; Selectable = $true },
-    @{ Text = "Mount & Blade 2: BannerLord"; Selectable = $true },
+    @{ Text = "Games:-"; Selectable = $false },
+    @{ Text = "Fallout 4"; Selectable = $true },
+    @{ Text = "Skyrim + Skyrim S .E."; Selectable = $true },
     @{ Text = ""; Selectable = $false },
-    @{ Text = "Options:"; Selectable = $false },
+    @{ Text = "Options:-"; Selectable = $false },
     @{ Text = "Exit Menu"; Selectable = $true }
 )
 $Selection = $null
@@ -86,10 +110,10 @@ While ($Selection -ne "Exit Menu") {
     $Selection = Create-Menu -MenuTitle $MenuTitle -MenuOptions $MenuOptions
 
     Switch($Selection) {
-        "ChatGPT (LenX)" { TerminateSelectedProcesses -ProcessNames @("ChatGPT") }
-        "PaintShop Pro" { TerminateSelectedProcesses -ProcessNames @("Paint Shop Pro 9", "Paint Shop Pro 8", "Corel PaintShop Pro") }
-        "Kenshi" { TerminateSelectedProcesses -ProcessNames @("kenshi_x64") }
-        "Mount & Blade 2: BannerLord" { TerminateSelectedProcesses -ProcessNames @("Bannerlord", "Bannerlord.Native") }
+        "ChatGPT by LenX" { TerminateSelectedProcesses -ProcessNames @("ChatGPT") }
+        "Corel/Jasc PaintShop Pro" { TerminateSelectedProcesses -ProcessNames @("Paint Shop Pro 9", "Paint Shop Pro 8", "Corel PaintShop Pro") }
+        "Fallout 4" { TerminateSelectedProcesses -ProcessNames @("f4se_loader", "Fallout4", "Fallout4Launcher") }
+        "Skyrim + Skyrim S.E." { TerminateSelectedProcesses -ProcessNames @("Skyrim", "SkyrimSE") }
         "Exit Menu" { Write-Host "`nExiting GameNotOver..."; Exit }
     }
 }
