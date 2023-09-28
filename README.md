@@ -19,22 +19,31 @@ Programs currently featured in the program are, ChatGPT (LenX), PaintShop Pro, B
 The app looks like this..
 ```
 
-                GameNotOver!
+                                 GAME NOT OVER!
 
-Please select which programs to terminate..
+ Please select which programs to terminate..
 
-  A.I.
-      ChatGPT (LenX)
+  A.I.:
+      ChatGPT by LenX
 
-  Media
-      PaintShop Pro
+  Media:
+      Corel/Jasc PaintShop Pro
 
-  Games
-    > Kenshi
-      Mount & Blade 2: BannerLord
+  Games:
+      Fallout 4
+      Skyrim + Skyrim S .E.
 
-  System
+  Options:
       Exit Menu
+
+
+
+
+
+
+
+
+
 
 ```
 
