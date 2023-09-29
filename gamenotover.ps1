@@ -1,5 +1,3 @@
-I want a blank line before the text "GAME NOT OVER!", however, using the "`n" in the line makes the text "GAME NOT OVER!" start from the next line, please implement the correct method for doing this...
-
 # Check for Administrative Privileges
 $currentUser = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
 $isAdmin = $currentUser.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
