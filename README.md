@@ -4,7 +4,7 @@ Status: Working.
 ### Update: 2023/09/29
 - Window Resizing and Title Setting - Moved window resize to the powershell script, and made window little bigger.
 - Some, organization and improvement, of, code and text.
-- Refined choices on the example menu, reduced games to just, Fallout 4 and Skyrim.
+- Refined choices on the example menu, reduced games to just, Fallout and Skyrim.
 
 ### Description:
 
