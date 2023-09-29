@@ -29,17 +29,18 @@ The app looks like this..
  Please select which programs to terminate..
 
   A.I.:
-      ChatGPT by LenX
+      ChatGPT (LenX)
 
   Media:
-      Corel/Jasc PaintShop Pro
+      PaintShop Pro (Corel/Jasc)
 
   Games:
-      Fallout 3/NV/4
-      Skyrim Legacy/SE
+      Fallout (3/NV/4)
+      Skyrim (Legacy/SE)
 
   Options:
       Exit Menu
+
 
                                                      .
 ```
