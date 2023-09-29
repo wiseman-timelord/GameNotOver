@@ -41,7 +41,7 @@ The app looks like this..
   Options:
       Exit Menu
 
-                                                     .
+
 ```
 ##
 
