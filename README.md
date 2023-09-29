@@ -36,7 +36,7 @@ The app looks like this..
 
   Games:
       Fallout 3/NV/4
-      Skyrim Oldrim/SE
+      Skyrim Legacy/SE
 
   Options:
       Exit Menu
