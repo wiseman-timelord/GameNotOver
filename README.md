@@ -1,5 +1,6 @@
 # GameNotOver
-**Status = Working**
+### Status:
+Working
 
 ### Description:
 
