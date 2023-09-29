@@ -6,6 +6,7 @@ Status: Working.
 - Some, organization and improvement, of, code and text.
 - Refined choices on the example menu, reduced games to just, Fallout and Skyrim.
 - Improved option Fallout (4) to become Fallout (3/NV/4).
+- Improved and optimized, batch launcher code.
 
 ### Description:
 
@@ -40,9 +41,10 @@ The app looks like this..
       Skyrim (Legacy/SE)
 
   Options:
-      Exit Menu
+    > Exit Menu
 
- 
+Script has exited, press any key to continue...
+
 ```
 ##
 
