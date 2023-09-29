@@ -26,7 +26,7 @@ The app looks like this..
 
                   GAME NOT OVER!
 
- Please select which programs to terminate..     .
+ Please select which programs to terminate..
 
   A.I.:
       ChatGPT (LenX)
