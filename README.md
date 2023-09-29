@@ -1,6 +1,6 @@
 # GameNotOver
 ### Status:
-Working
+Working.
 
 ### Description:
 
