@@ -12,9 +12,9 @@ function Set-WindowTitleAndSize {
     param (
         [string]$title = "Default Window Title",
         [int]$width = 50,
-        [int]$height = 22,
+        [int]$height = 20,
         [int]$bufferWidth = 50,
-        [int]$bufferHeight = 66
+        [int]$bufferHeight = 60
     )
 
     $host.UI.RawUI.WindowTitle = $title
@@ -117,6 +117,6 @@ While ($Selection -ne "Exit Menu") {
         "PaintShop Pro (Corel/Jasc)" { TerminateSelectedProcesses -ProcessNames @("Paint Shop Pro 9", "Paint Shop Pro 8", "Corel PaintShop Pro") }
         "Fallout (3/NV/4)" { TerminateSelectedProcesses -ProcessNames @("f4se_loader", "Fallout4", "Fallout4Launcher", "Fallout3", "FalloutNV" ) }
         "Skyrim (Legacy/SE)" { TerminateSelectedProcesses -ProcessNames @("Skyrim", "SkyrimSE") }
-        "Exit Menu" { Write-Host "`nExiting GameNotOver..."; Exit }
+        "Exit Menu" { Exit }
     }
 }
