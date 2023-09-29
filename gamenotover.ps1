@@ -108,7 +108,6 @@ $MenuOptions = @(
     @{ Text = "Exit Menu"; Selectable = $true }
 )
 $Selection = $null
-
 While ($Selection -ne "Exit Menu") {
     $Selection = Create-Menu -MenuTitle $MenuTitle -MenuOptions $MenuOptions
 
