@@ -29,5 +29,5 @@ Echo.
 
 
 :: Exit Program
-echo Script has exited, press any key to continue...
+echo Program has exited, press any key to close...
 pause > nul

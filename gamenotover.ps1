@@ -33,7 +33,7 @@ Function TerminateSelectedProcesses {
         Stop-Process -Name $ProcessName -Force -ErrorAction SilentlyContinue
     }
 
-    Write-Host "`nSuccessfully terminated, press any key..."
+    Write-Host "`nSuccessfully terminated, press any key... "
     $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown") | Out-Null
 }
 
