@@ -43,7 +43,7 @@ The app looks like this..
   Options:
     > Exit Menu
 
-Script has exited, press any key to continue...
+Program has exited, press any key...
 
 ```
 ##
