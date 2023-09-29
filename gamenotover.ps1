@@ -12,9 +12,9 @@ function Set-WindowTitleAndSize {
     param (
         [string]$title = "Default Window Title",
         [int]$width = 50,
-        [int]$height = 20,
+        [int]$height = 22,
         [int]$bufferWidth = 50,
-        [int]$bufferHeight = 60
+        [int]$bufferHeight = 66
     )
 
     $host.UI.RawUI.WindowTitle = $title
@@ -101,7 +101,7 @@ $MenuOptions = @(
     @{ Text = "PaintShop Pro (Corel/Jasc)"; Selectable = $true },
     @{ Text = ""; Selectable = $false },
     @{ Text = "Games:-"; Selectable = $false },
-    @{ Text = "Fallout (3/NV/4) "; Selectable = $true },
+    @{ Text = "Fallout (3/NV/4)"; Selectable = $true },
     @{ Text = "Skyrim (Legacy/SE)"; Selectable = $true },
     @{ Text = ""; Selectable = $false },
     @{ Text = "Options:-"; Selectable = $false },
