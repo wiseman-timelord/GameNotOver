@@ -24,7 +24,7 @@ Programs currently featured in the program are, ChatGPT (LenX), PaintShop Pro, B
 The app looks like this..
 ```
 
-                     GAME NOT OVER!
+                    GAME NOT OVER!
 
  Please select which programs to terminate..
 
@@ -35,12 +35,11 @@ The app looks like this..
       Corel/Jasc PaintShop Pro
 
   Games:
-      Fallout 4
-      Skyrim + Skyrim S .E.
+      Fallout 3/NV/4
+      Skyrim Oldrim/SE
 
   Options:
       Exit Menu
-
 
                                                      .
 ```
