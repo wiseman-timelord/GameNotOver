@@ -103,8 +103,8 @@ $MenuOptions = @(
     @{ Text = "Corel/Jasc PaintShop Pro"; Selectable = $true },
     @{ Text = ""; Selectable = $false },
     @{ Text = "Games:-"; Selectable = $false },
-    @{ Text = "Fallout 4"; Selectable = $true },
-    @{ Text = "Skyrim + Skyrim S .E."; Selectable = $true },
+    @{ Text = "Fallout 3/NV/4 "; Selectable = $true },
+    @{ Text = "Skyrim Oldrim/SE"; Selectable = $true },
     @{ Text = ""; Selectable = $false },
     @{ Text = "Options:-"; Selectable = $false },
     @{ Text = "Exit Menu"; Selectable = $true }
@@ -117,8 +117,8 @@ While ($Selection -ne "Exit Menu") {
     Switch($Selection) {
         "ChatGPT by LenX" { TerminateSelectedProcesses -ProcessNames @("ChatGPT") }
         "Corel/Jasc PaintShop Pro" { TerminateSelectedProcesses -ProcessNames @("Paint Shop Pro 9", "Paint Shop Pro 8", "Corel PaintShop Pro") }
-        "Fallout 4" { TerminateSelectedProcesses -ProcessNames @("f4se_loader", "Fallout4", "Fallout4Launcher") }
-        "Skyrim + Skyrim S.E." { TerminateSelectedProcesses -ProcessNames @("Skyrim", "SkyrimSE") }
+        "Fallout 3/NV/4" { TerminateSelectedProcesses -ProcessNames @("f4se_loader", "Fallout4", "Fallout4Launcher", "Fallout3", "FalloutNV" ) }
+        "Skyrim Oldrim/SE" { TerminateSelectedProcesses -ProcessNames @("Skyrim", "SkyrimSE") }
         "Exit Menu" { Write-Host "`nExiting GameNotOver..."; Exit }
     }
 }
