@@ -11,10 +11,10 @@ if (-not $isAdmin) {
 function Set-WindowTitleAndSize {
     param (
         [string]$title = "Default Window Title",
-        [int]$width = 55,
+        [int]$width = 50,
         [int]$height = 20,
-        [int]$bufferWidth = 55,
-        [int]$bufferHeight = 75
+        [int]$bufferWidth = 50,
+        [int]$bufferHeight = 60
     )
 
     $host.UI.RawUI.WindowTitle = $title
