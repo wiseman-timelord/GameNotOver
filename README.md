@@ -48,7 +48,7 @@ Program has exited, press any key to close...
 3. Press the Enter key to initiate the termination of the selected program(s).
 4. A confirmation message will appear, prompting you to press any key to continue.
 5. Select "Exit Menu" to gracefully exit GameNotOver, or keep the app in the background.
-6. The "GameNotOver.lnk" shortcut provided with preset arguements to run ".bat" on taskbar.
+* To run from taskbar the "GameNotOver.lnk" is provided, but it needs new locations in its properties.
 
 ### Requirements:
 
