@@ -11,10 +11,10 @@ if (-not $isAdmin) {
 function Set-WindowTitleAndSize {
     param (
         [string]$title = "Default Window Title",
-        [int]$width = 50,
-        [int]$height = 20,
-        [int]$bufferWidth = 50,
-        [int]$bufferHeight = 60
+        [int]$width = 37,
+        [int]$height = 21,
+        [int]$bufferWidth = 37,
+        [int]$bufferHeight = 63
     )
 
     $host.UI.RawUI.WindowTitle = $title
@@ -58,7 +58,7 @@ Function Create-Menu {
         Write-Host $centerAlignedText
 
         Write-Host "" # Blank line
-        Write-Host " Please select which programs to terminate.."
+        Write-Host " Select programs to terminate.."
         Write-Host "" # Blank line
 
         For ($i = 0; $i -lt $MenuOptions.Length; $i++) {
@@ -96,6 +96,7 @@ $MenuTitle = "GAME NOT OVER!"
 $MenuOptions = @(
     @{ Text = "A.I.:-"; Selectable = $false },
     @{ Text = "ChatGPT (LenX)"; Selectable = $true },
+    @{ Text = "Notepad (All)"; Selectable = $true },
     @{ Text = ""; Selectable = $false },
     @{ Text = "Media:-"; Selectable = $false },
     @{ Text = "PaintShop Pro (Corel/Jasc)"; Selectable = $true },
@@ -114,7 +115,8 @@ While ($Selection -ne "Exit Menu") {
     Switch($Selection) {
         "ChatGPT (LenX)" { TerminateSelectedProcesses -ProcessNames @("ChatGPT") }
         "PaintShop Pro (Corel/Jasc)" { TerminateSelectedProcesses -ProcessNames @("Paint Shop Pro 9", "Paint Shop Pro 8", "Corel PaintShop Pro") }
-        "Fallout (3/NV/4)" { TerminateSelectedProcesses -ProcessNames @("f4se_loader", "Fallout4", "Fallout4Launcher", "Fallout3", "FalloutNV" ) }
+        "Notepad (All)" { TerminateSelectedProcesses -ProcessNames @("NotePad") } 
+		"Fallout (3/NV/4)" { TerminateSelectedProcesses -ProcessNames @("f4se_loader", "Fallout4", "Fallout4Launcher", "Fallout3", "FalloutNV" ) }
         "Skyrim (Legacy/SE)" { TerminateSelectedProcesses -ProcessNames @("Skyrim", "SkyrimSE") }
         "Exit Menu" { Exit }
     }
