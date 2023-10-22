@@ -37,8 +37,6 @@ The app looks like this..
   Options:
     > Exit Menu
 
-Program has exited, press any key to close...
-
 ```
 ##
 
