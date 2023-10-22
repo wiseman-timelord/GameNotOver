@@ -12,9 +12,9 @@ function Set-WindowTitleAndSize {
     param (
         [string]$title = "Default Window Title",
         [int]$width = 37,
-        [int]$height = 21,
+        [int]$height = 23,
         [int]$bufferWidth = 37,
-        [int]$bufferHeight = 63
+        [int]$bufferHeight = 69
     )
 
     $host.UI.RawUI.WindowTitle = $title
@@ -100,7 +100,8 @@ $MenuOptions = @(
     @{ Text = ""; Selectable = $false },
     @{ Text = "Media:-"; Selectable = $false },
     @{ Text = "PaintShop Pro (Corel/Jasc)"; Selectable = $true },
-    @{ Text = ""; Selectable = $false },
+    @{ Text = "PhotoShop (All)"; Selectable = $true },
+	@{ Text = ""; Selectable = $false },
     @{ Text = "Games:-"; Selectable = $false },
     @{ Text = "Fallout (3/NV/4)"; Selectable = $true },
     @{ Text = "Skyrim (Legacy/SE)"; Selectable = $true },
@@ -115,7 +116,8 @@ While ($Selection -ne "Exit Menu") {
     Switch($Selection) {
         "ChatGPT (LenX)" { TerminateSelectedProcesses -ProcessNames @("ChatGPT") }
         "PaintShop Pro (Corel/Jasc)" { TerminateSelectedProcesses -ProcessNames @("Paint Shop Pro 9", "Paint Shop Pro 8", "Corel PaintShop Pro") }
-        "Notepad (All)" { TerminateSelectedProcesses -ProcessNames @("NotePad") } 
+        "PhotoShop (All)" { TerminateSelectedProcesses -ProcessNames @("Photoshop") }
+		"Notepad (All)" { TerminateSelectedProcesses -ProcessNames @("NotePad") } 
 		"Fallout (3/NV/4)" { TerminateSelectedProcesses -ProcessNames @("f4se_loader", "Fallout4", "Fallout4Launcher", "Fallout3", "FalloutNV" ) }
         "Skyrim (Legacy/SE)" { TerminateSelectedProcesses -ProcessNames @("Skyrim", "SkyrimSE") }
         "Exit Menu" { Exit }
