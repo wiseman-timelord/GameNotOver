@@ -28,6 +28,7 @@ The app looks like this..
 
   Media:
       PaintShop Pro (Corel/Jasc)
+      PhotoShop (All)
 
   Games:
       Fallout (3/NV/4)
