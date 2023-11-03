@@ -1,6 +1,6 @@
 # GameNotOver
 ### Status:
-Working.
+Working(ish). The batches for this program may only run on Windows 10 due to the different PowerShell launch commands required for various OS versions, that microsoft have bizarly chosen to use, and may cause endless launch loop on other systems. I attempted to schedule it for fixing, but my internet access was ended due to financial constraints, additionally my internet was mysteriously blocked in the last 3 weeks of being able to get into debt for internet/gpt4 access to, produce and progress, my programs. My programming projects are on hold, and I received no assistance during my inability to work because of a back injury. Despite seeking support, the NHS and my workplace (EVRi) have not been helpful, resulting in my termination for unsound reasons. Universal credit requires me to work without a doctor's note. In short, I'm currently unable to work, and you'll have to wait for multi-OS support, the crowd-funder was not there for no reason, I genuinely needed help to continue.
 
 ### Description:
 
