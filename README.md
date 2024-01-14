@@ -54,5 +54,5 @@ The app looks like this..
 - Windows 2008 R2, 2012, 8.1, 10 (Powershell)
 - Administrative rights.
 
-### DISCLAIMER
-Read "Licence.Txt", its, what its there for and why its supplied with the package.
+## DISCLAIMER
+The "License.Txt" covers, this and relating, stuff.
