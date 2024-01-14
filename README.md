@@ -54,7 +54,5 @@ The app looks like this..
 - Windows 2008 R2, 2012, 8.1, 10 (Powershell)
 - Administrative rights.
 
-### Disclaimer:
-
-GameNotOver is designed to forcefully terminate processes, which may lead to the loss of unsaved data or other unexpected consequences in the terminated applications. 
-It is strongly advised to save all work before utilizing GameNotOver to close any program. Use at your own discretion and risk.
+### DISCLAIMER
+Read "Licence.Txt", its, what its there for and why its supplied with the package.
