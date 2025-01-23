@@ -1,7 +1,26 @@
+using namespace Avalonia
 using namespace Avalonia.Controls
+using namespace Avalonia.Controls.ApplicationLifetimes
 using namespace Avalonia.Markup.Xaml
 using namespace System.Xml
 
+# Define the App class for Avalonia initialization
+class App : Application {
+    App() {
+        # Load the XAML for the application
+        AvaloniaXamlLoader.Load($this)
+    }
+
+    [void] OnFrameworkInitializationCompleted() {
+        # Set up the main window if running in a desktop environment
+        if ($this.ApplicationLifetime -is [IClassicDesktopStyleApplicationLifetime]) {
+            $this.ApplicationLifetime.MainWindow = [MainWindow]::new()
+        }
+        base.OnFrameworkInitializationCompleted()
+    }
+}
+
+# Define the MainWindow class
 class MainWindow : Window {
     [XmlDocument]$ConfigXml
     [hashtable]$Categories = @{}
@@ -12,16 +31,22 @@ class MainWindow : Window {
 
     MainWindow() {
         try {
+            # Load the XAML for the window
             [AvaloniaXamlLoader]::Load($this)
             $this.DataContext = $this
-            $this.Closing += { param($s,$e) 
+
+            # Handle the window closing event
+            $this.Closing += { param($s, $e) 
                 if (-not $this.IsClosing) { 
                     $e.Cancel = $true 
                     $this.HandleClosing()
                 }
             }
+
+            # Load configuration and initialize events
             $this.LoadConfig()
             $this.InitEvents()
+
             # Start process monitoring
             $this.StartProcessMonitor()
         } catch {
@@ -29,13 +54,15 @@ class MainWindow : Window {
         }
     }
 
-    [void]LoadConfig() {
+    [void] LoadConfig() {
         try {
+            # Load the configuration XML file
             $this.ConfigXml = New-Object XmlDocument
             $this.ConfigXml.Load(".\scripts\interface.xml")
             $this.Categories.Clear()
             $this.ProcessItems.Clear()
 
+            # Parse process definitions from the XML
             foreach ($cat in $this.ConfigXml.SelectNodes("//ResourceDictionary[@x:Key='ProcessDefinitions']//x:Array")) {
                 $catName = $cat.GetAttribute("x:Key").Split('.')[0]
                 $this.Categories[$catName] = @{}
@@ -45,29 +72,28 @@ class MainWindow : Window {
                     $this.UpdateProcessCount($catName, $name)
                 }
             }
-            $this.FindControl<ComboBox>("CategorySelector").Items = $this.Categories.Keys
-            $this.StatusMessage = "Configuration loaded"
 
-            # Load custom processes from list.txt
-            if (Test-Path ".\data\list.txt") {
-                $customProcesses = Get-Content ".\data\list.txt" | Where-Object { $_ -match '\S' }
-                foreach ($line in $customProcesses) {
-                    if ($line -match '^(.+?)\|(.+)$') {
-                        $name = $matches[1].Trim()
-                        $ids = $matches[2].Trim()
-                        $this.Categories["Custom"] = @{} if (-not $this.Categories.ContainsKey("Custom"))
-                        $this.Categories["Custom"][$name] = $ids.Split(',')
-                        $this.UpdateProcessCount("Custom", $name)
-                    }
+            # Parse custom processes from the XML
+            $customProcessesNode = $this.ConfigXml.SelectSingleNode("//CustomProcesses")
+            if ($customProcessesNode) {
+                foreach ($proc in $customProcessesNode.ChildNodes) {
+                    $name, $ids = $proc.InnerText -split '\|'
+                    $this.Categories["Custom"] = @{} if (-not $this.Categories.ContainsKey("Custom"))
+                    $this.Categories["Custom"][$name] = $ids.Split(',')
+                    $this.UpdateProcessCount("Custom", $name)
                 }
             }
+
+            # Populate the category selector
+            $this.FindControl<ComboBox>("CategorySelector").Items = $this.Categories.Keys
+            $this.StatusMessage = "Configuration loaded"
         } catch {
             $this.StatusMessage = "Failed to load configuration"
             throw
         }
     }
 
-    [void]UpdateProcessCount($category, $name) {
+    [void] UpdateProcessCount($category, $name) {
         $count = 0
         foreach ($id in $this.Categories[$category][$name]) {
             $count += @(Get-Process -Name $id -ErrorAction SilentlyContinue).Count
@@ -83,14 +109,15 @@ class MainWindow : Window {
         }
     }
 
-    [void]StartProcessMonitor() {
+    [void] StartProcessMonitor() {
+        $self = $this
         $timer = New-Object System.Timers.Timer
         $timer.Interval = 5000 # Update every 5 seconds
         $timer.Add_Elapsed({
-            $this.Dispatcher.InvokeAsync({
-                foreach ($cat in $this.Categories.Keys) {
-                    foreach ($name in $this.Categories[$cat].Keys) {
-                        $this.UpdateProcessCount($cat, $name)
+            $self.Dispatcher.InvokeAsync({
+                foreach ($cat in $self.Categories.Keys) {
+                    foreach ($name in $self.Categories[$cat].Keys) {
+                        $self.UpdateProcessCount($cat, $name)
                     }
                 }
             })
@@ -98,30 +125,41 @@ class MainWindow : Window {
         $timer.Start()
     }
 
-    [void]SaveConfig() {
+    [void] SaveConfig() {
         try {
+            # Save process definitions to the XML file
             foreach ($cat in $this.Categories.Keys) {
-                $node = $this.ConfigXml.SelectSingleNode("//x:Array[@x:Key='$cat.Processes']")
-                if ($node) {
-                    $node.InnerXml = ""
+                if ($cat -eq "Custom") {
+                    # Handle custom processes separately
+                    $customNode = $this.ConfigXml.SelectSingleNode("//CustomProcesses")
+                    if (-not $customNode) {
+                        $customNode = $this.ConfigXml.CreateElement("CustomProcesses")
+                        $this.ConfigXml.DocumentElement.AppendChild($customNode)
+                    }
+                    $customNode.InnerXml = ""
                     foreach ($proc in $this.Categories[$cat].Keys) {
                         $ids = $this.Categories[$cat][$proc] -join ','
-                        $procNode = $this.ConfigXml.CreateElement("x:String")
+                        $procNode = $this.ConfigXml.CreateElement("Process")
                         $procNode.InnerText = "$proc|$ids"
-                        $node.AppendChild($procNode)
+                        $customNode.AppendChild($procNode)
+                    }
+                } else {
+                    # Handle predefined categories
+                    $node = $this.ConfigXml.SelectSingleNode("//x:Array[@x:Key='$cat.Processes']")
+                    if ($node) {
+                        $node.InnerXml = ""
+                        foreach ($proc in $this.Categories[$cat].Keys) {
+                            $ids = $this.Categories[$cat][$proc] -join ','
+                            $procNode = $this.ConfigXml.CreateElement("x:String")
+                            $procNode.InnerText = "$proc|$ids"
+                            $node.AppendChild($procNode)
+                        }
                     }
                 }
             }
+
+            # Save the updated XML
             $this.ConfigXml.Save(".\scripts\interface.xml")
-            
-            # Save custom processes to list.txt
-            if ($this.Categories.ContainsKey("Custom")) {
-                $customProcesses = foreach ($name in $this.Categories["Custom"].Keys) {
-                    "$name|$($this.Categories['Custom'][$name] -join ',')"
-                }
-                $customProcesses | Set-Content ".\data\list.txt"
-            }
-            
             $this.StatusMessage = "Configuration saved"
         } catch {
             $this.StatusMessage = "Failed to save configuration"
@@ -129,14 +167,15 @@ class MainWindow : Window {
         }
     }
 
-    [void]InitEvents() {
+    [void] InitEvents() {
+        # Bind button click events
         $this.FindControl<Button>("TerminateButton").Add_Click({ $this.TerminateSelected() })
         $this.FindControl<Button>("RefreshButton").Add_Click({ $this.LoadConfig() })
         $this.FindControl<Button>("AddProcess").Add_Click({ $this.AddProcess() })
         $this.FindControl<Button>("RemoveProcess").Add_Click({ $this.RemoveSelected() })
     }
 
-    [void]TerminateSelected() {
+    [void] TerminateSelected() {
         $selected = $this.FindControl<ListBox>("ProcessList").SelectedItem
         if ($selected -match '^(.+?) - (.+?) \(\d+') {
             $cat = $matches[1]
@@ -160,7 +199,7 @@ class MainWindow : Window {
         }
     }
 
-    [void]AddProcess() {
+    [void] AddProcess() {
         $name = $this.FindControl<TextBox>("NewProcessName").Text
         $ids = $this.FindControl<TextBox>("NewProcessId").Text
         $cat = $this.FindControl<ComboBox>("CategorySelector").SelectedItem
@@ -179,7 +218,7 @@ class MainWindow : Window {
         }
     }
 
-    [void]RemoveSelected() {
+    [void] RemoveSelected() {
         $selected = $this.FindControl<ListBox>("ProcessList").SelectedItem
         if ($selected -match '^(.+?) - (.+?) \(\d+') {
             try {
@@ -195,7 +234,7 @@ class MainWindow : Window {
         }
     }
 
-    [void]HandleClosing() {
+    [void] HandleClosing() {
         try {
             $this.SaveConfig()
             $this.IsClosing = $true
@@ -206,8 +245,12 @@ class MainWindow : Window {
     }
 }
 
+# Start the Avalonia application
 try {
-    [Application]::new().Run([MainWindow]::new())
+    [AppBuilder]::Configure([App]::new())
+        .UsePlatformDetect()
+        .LogToTrace()
+        .StartWithClassicDesktopLifetime(@())
 } catch {
     throw
 }

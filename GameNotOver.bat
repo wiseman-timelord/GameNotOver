@@ -3,13 +3,18 @@ REM .\GameNotOver.bat
 setlocal enabledelayedexpansion
 
 REM Global Variables
-set "LAUNCHER=.\launcher.ps1"
-set "INSTALLER=.\installer.ps1"
 set "TITLE=GameNotOver
 
 REM Set window title and color scheme
 title %TITLE%
 color 1F
+
+:: DP0 TO SCRIPT BLOCK, DO NOT, MODIFY or MOVE: START
+set "ScriptDirectory=%~dp0"
+set "ScriptDirectory=%ScriptDirectory:~0,-1%"
+cd /d "%ScriptDirectory%"
+echo Dp0'd to Script.
+:: DP0 TO SCRIPT BLOCK, DO NOT, MODIFY or MOVE: END
 
 REM Check for Administrator privileges
 net session >nul 2>&1
@@ -52,7 +57,7 @@ if /i "%choice%"=="1" (
     cls
     call :DisplayTitle "Initialization"
     echo Starting %TITLE%...
-    powershell -NoProfile -ExecutionPolicy Bypass -File "%LAUNCHER%"
+    powershell -NoProfile -ExecutionPolicy Bypass -File .\launcher.ps1
     if errorlevel 1 (
         echo Error launching %TITLE%
         pause
@@ -64,11 +69,11 @@ if /i "%choice%"=="2" (
     cls
     call :DisplayTitle "Installation"
     echo Installing Requirements...
-    powershell -NoProfile -ExecutionPolicy Bypass -File "%INSTALLER%"
+    powershell -NoProfile -ExecutionPolicy Bypass -File .\installer.ps1
     if errorlevel 1 (
         echo Error during installation
-        pause
     )
+    pause
     goto MainMenu
 )
 

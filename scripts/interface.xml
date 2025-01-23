@@ -169,4 +169,10 @@
             </Style>
         </ResourceDictionary>
     </Application.Resources>
+
+    <!-- Custom Processes Section -->
+    <CustomProcesses>
+        <!-- Example custom process -->
+        <!-- <Process>CustomProcessName|ProcessID1,ProcessID2</Process> -->
+    </CustomProcesses>
 </Application>
