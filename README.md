@@ -5,6 +5,7 @@
 - The plan is to have a GUI using avalonia...
 1. Installer done, but some issue with the avalonia.styling not actually existing, so we lopped it off after 5 hours of banging my head against the monitor.
 2. Program needs testing and bugfixing.
+3. move settings to a psd1 and include functions for expimppsd1.
 
 ### Files list...
 ```
