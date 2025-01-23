@@ -1,6 +1,30 @@
 # GameNotOver
 ### Status: Updating Now - Here is the readme to the next version, it will be UPGRADED. For now the releases are the working but are non-GUI versions.
 
+### Development
+- Installer done, but some issue with the avalonia.styling not actually existing, so we lopped it off after 5 hours of banging my head against the monitor.
+- Program needs testing and bugfixing.
+- Files list...
+```
+.\  # Root folder
+.\GameNotOver.bat  # Entry point for user
+.\launcher.ps1  # Entry point for the main program
+.\installer.ps1 # The main script
+.\GameNotOver.bat  # Entry point for user
+├── scripts\  # Scripts folder
+│   ├── interface.ps1  # Interface script
+│   └── interface.xml  # Interface config 
+├── data\  # Data folder created by installer
+│   └── AvaloniaUI\  # Avalonia UI components installed by installer from SDK
+│   │   ├── Avalonia.Base.dll
+│   │   ├── Avalonia.Controls.dll
+│   │   ├── Avalonia.Desktop.dll
+│   │   ├── Avalonia.Markup.dll
+│   │   ├── Avalonia.Markup.Xaml.dll
+│   │   └── Avalonia.Themes.Default.dll
+└── temp\  =used during install
+```
+
 ### Description:
 GameNotOver is a PowerShell application tailored for Windows users, enabling them to forcefully close all instances of selected programs through an Avalonia UI. When using programs in windows 10, upon, exiting or crashing, some programs may leave a residual 500MB-4GB, that, lock files in place or prevent loading, for example beta programes, additionally some programs may freeze, which may even cause issues shutting down. My application is a manageable shortlist for closing all instances of pre-selected troublesome programs, thus, saving on repeatingly, running task manager and searching for running processes, each time. There are some default apps already, but as I mentioned you will be able to manage the list within the program.
 
@@ -41,29 +65,6 @@ Selection; Options = 1-2, Exit = X: 2
 
 ## Notes
 - [Avalonia UI](https://github.com/AvaloniaUI/Avalonia) - Multi-Platform Graphical User Interface.
-
-### Development
-- Files list...
-```
-.\  # Root folder
-.\GameNotOver.bat  # Entry point for user
-.\launcher.ps1  # Entry point for the main program
-.\installer.ps1 # The main script
-.\GameNotOver.bat  # Entry point for user
-├── scripts\  # Scripts folder
-│   ├── interface.ps1  # Interface script
-│   └── interface.xml  # Interface config 
-├── data\  # Data folder created by installer
-│   └── AvaloniaUI\  # Avalonia UI components installed by installer from SDK
-│   │   ├── Avalonia.Base.dll
-│   │   ├── Avalonia.Controls.dll
-│   │   ├── Avalonia.Desktop.dll
-│   │   ├── Avalonia.Markup.dll
-│   │   ├── Avalonia.Markup.Xaml.dll
-│   │   ├── Avalonia.Styling.dll
-│   │   └── Avalonia.Themes.Default.dll
-└── temp\  =used during install
-```
 
 ## DISCLAIMER
 This software is subject to the terms in License.Txt, covering usage, distribution, and modifications. For full details on your rights and obligations, refer to License.Txt.
