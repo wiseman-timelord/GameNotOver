@@ -15,11 +15,10 @@ GameNotOver is a PowerShell application tailored for Windows users, enabling the
 
 ### Requirements:
 - Windows 10 - the scripts are in Powershell.
-- Libraries - Avalonia UI is part of DotNet-Sdk
+- Libraries - The installer handles, AvaloniaUI and DotNet-Sdk (zip).
 - Admin - Batch must be run with Administrative rights.
 
 ### Usage:
-
 1. Execute the batch "GameNotOver.bat" to launch the gamenotover.ps1 powershell script as Admin.
 2. Utilize the arrow keys to navigate the menu and highlight the desired program for termination.
 3. Press the Enter key to initiate the termination of the selected program(s).
@@ -27,23 +26,25 @@ GameNotOver is a PowerShell application tailored for Windows users, enabling the
 5. Select "Exit Menu" to gracefully exit GameNotOver, or keep the app in the background.
 * To run from taskbar the "GameNotOver.lnk" is provided, but it needs new locations in its properties.
 
-
-
 ## Development
 - Files list...
 ```
-.\                           # Root folder
+.\  # Root folder
+.\GameNotOver.bat  # Entry point for user
+.\launcher.ps1  # Entry point for the main program
+.\installer.ps1 # The main script
+.\GameNotOver.bat  # Entry point for user
 ├── scripts\                 # Scripts folder
 │   ├── interface.ps1        # Interface script
-│   └── interface.xml        # Interface config
-├── data\                    # Data folder
-│   ├── list.txt            # Custom process list
-│   └── AvaloniaUI\         # Avalonia UI components only
+│   └── interface.xml        # Interface config 
+├── data\                    # Data folder created by installer
+│   ├── list.txt            # Customizeable process list
+│   └── AvaloniaUI\         # Avalonia UI components installed by installer from SDK
 │       ├── Avalonia.dll
 │       ├── Avalonia.Controls.dll
 │       ├── Avalonia.Markup.Xaml.dll
 │       └── ...
-└── temp\          
+└── temp\  =used during install
 ```
 
 ## DISCLAIMER
