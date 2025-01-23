@@ -34,12 +34,12 @@ GameNotOver is a PowerShell application tailored for Windows users, enabling the
 .\launcher.ps1  # Entry point for the main program
 .\installer.ps1 # The main script
 .\GameNotOver.bat  # Entry point for user
-├── scripts\                 # Scripts folder
-│   ├── interface.ps1        # Interface script
-│   └── interface.xml        # Interface config 
-├── data\                    # Data folder created by installer
-│   ├── list.txt            # Customizeable process list
-│   └── AvaloniaUI\         # Avalonia UI components installed by installer from SDK
+├── scripts\  # Scripts folder
+│   ├── interface.ps1  # Interface script
+│   └── interface.xml  # Interface config 
+├── data\  # Data folder created by installer
+│   ├── list.txt  # Customizeable process list
+│   └── AvaloniaUI\  # Avalonia UI components installed by installer from SDK
 │       ├── Avalonia.dll
 │       ├── Avalonia.Controls.dll
 │       ├── Avalonia.Markup.Xaml.dll
