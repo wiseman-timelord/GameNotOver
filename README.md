@@ -12,7 +12,6 @@
 .\GameNotOver.bat  # Entry point for user
 .\launcher.ps1  # Entry point for the main program
 .\installer.ps1 # The main script
-.\GameNotOver.bat  # Entry point for user
 ├── scripts\  # Scripts folder
 │   ├── interface.ps1  # Interface script
 │   └── interface.xml  # Interface config 
