@@ -7,6 +7,7 @@ GameNotOver is a PowerShell application tailored for Windows users, enabling the
 ### Features:
 1. Graphical User Interface - For managing the list and user interacctions, with persistence in the text file in `.\data`.
 2. Forceful Termination of Processes - Empowers users to forcefully close all occurrences of selected applications, effectively handling unresponsive or crashed programs.
+3. Batch Installer/Launcher - For installing requirements and launching the powershell scripts at the click of a button.
 
 ### Preview:
 - Picture of main program coming soon...
