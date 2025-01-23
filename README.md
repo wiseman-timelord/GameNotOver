@@ -2,9 +2,11 @@
 ### Status: Updating Now - Here is the readme to the next version, it will be UPGRADED. For now the releases are the working but are non-GUI versions.
 
 ### Development
-- Installer done, but some issue with the avalonia.styling not actually existing, so we lopped it off after 5 hours of banging my head against the monitor.
-- Program needs testing and bugfixing.
-- Files list...
+- The plan is to have a GUI using avalonia...
+1. Installer done, but some issue with the avalonia.styling not actually existing, so we lopped it off after 5 hours of banging my head against the monitor.
+2. Program needs testing and bugfixing.
+
+### Files list...
 ```
 .\  # Root folder
 .\GameNotOver.bat  # Entry point for user
