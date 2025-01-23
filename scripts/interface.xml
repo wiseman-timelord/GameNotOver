@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:sys="clr-namespace:System;assembly=netstandard">
+    
+    <!-- UI Layout Definition -->
+    <Window x:Class="GameNotOver.MainWindow"
+            Title="GameNotOver!"
+            Width="800" Height="600"
+            MinWidth="600" MinHeight="400"
+            WindowStartupLocation="CenterScreen"
+            Background="{DynamicResource WindowBackgroundBrush}">
+        
+        <Window.Styles>
+            <Style Selector="Button">
+                <Setter Property="Padding" Value="10,5"/>
+                <Setter Property="MinWidth" Value="100"/>
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            </Style>
+            <Style Selector="TextBox">
+                <Setter Property="Padding" Value="5"/>
+                <Setter Property="MinHeight" Value="30"/>
+            </Style>
+            <Style Selector="ComboBox">
+                <Setter Property="Padding" Value="5"/>
+                <Setter Property="MinHeight" Value="30"/>
+            </Style>
+        </Window.Styles>
+
+        <Grid RowDefinitions="Auto,*,Auto" Margin="10">
+            <!-- Header -->
+            <Border Grid.Row="0" 
+                    BorderBrush="{DynamicResource HeaderBorderBrush}"
+                    BorderThickness="0,0,0,1"
+                    Padding="0,10,0,20"
+                    Margin="0,0,0,10">
+                <TextBlock Text="{DynamicResource AppTitle}" 
+                          FontSize="28" 
+                          FontWeight="Bold"
+                          HorizontalAlignment="Center"/>
+            </Border>
+            
+            <!-- Main Content -->
+            <TabControl Grid.Row="1" Margin="0,10">
+                <!-- Processes Tab -->
+                <TabItem Header="Processes">
+                    <Grid ColumnDefinitions="*,Auto" Margin="5">
+                        <Border Grid.Column="0"
+                                BorderBrush="{DynamicResource ListBorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                            <ListBox Name="ProcessList" 
+                                    ItemsSource="{Binding ProcessItems}"
+                                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                    Classes="process-list"/>
+                        </Border>
+                        
+                        <StackPanel Grid.Column="1" 
+                                  Spacing="10" 
+                                  Margin="20,0,0,0"
+                                  MinWidth="150">
+                            <Button Name="TerminateButton" 
+                                    Content="{DynamicResource TerminateButtonText}"
+                                    Classes="danger"/>
+                            <Button Name="RefreshButton" 
+                                    Content="{DynamicResource RefreshButtonText}"/>
+                        </StackPanel>
+                    </Grid>
+                </TabItem>
+
+                <!-- Settings Tab -->
+                <TabItem Header="Settings">
+                    <StackPanel Spacing="15" Margin="10">
+                        <TextBox Name="NewProcessName" 
+                                Watermark="{DynamicResource ProcessNameWatermark}"/>
+                        <TextBox Name="NewProcessId" 
+                                Watermark="{DynamicResource ProcessIdWatermark}"/>
+                        <ComboBox Name="CategorySelector" 
+                                 PlaceholderText="{DynamicResource CategorySelectorPlaceholder}"
+                                 ItemsSource="{Binding Categories}"/>
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <Button Name="AddProcess" 
+                                    Content="{DynamicResource AddButtonText}"
+                                    Classes="success"/>
+                            <Button Name="RemoveProcess" 
+                                    Content="{DynamicResource RemoveButtonText}"
+                                    Classes="warning"/>
+                        </StackPanel>
+                    </StackPanel>
+                </TabItem>
+            </TabControl>
+
+            <!-- Status Bar -->
+            <Border Grid.Row="2" 
+                    BorderBrush="{DynamicResource StatusBarBorderBrush}"
+                    BorderThickness="0,1,0,0"
+                    Padding="10,5">
+                <TextBlock Name="StatusText" 
+                          Text="{Binding StatusMessage}"
+                          FontSize="12"/>
+            </Border>
+        </Grid>
+    </Window>
+
+    <!-- Resource Definitions -->
+    <Application.Resources>
+        <ResourceDictionary>
+            <!-- Colors and Brushes -->
+            <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#F5F5F5"/>
+            <SolidColorBrush x:Key="HeaderBorderBrush" Color="#DDDDDD"/>
+            <SolidColorBrush x:Key="ListBorderBrush" Color="#CCCCCC"/>
+            <SolidColorBrush x:Key="StatusBarBorderBrush" Color="#DDDDDD"/>
+            
+            <!-- UI Strings -->
+            <x:String x:Key="AppTitle">GameNotOver!</x:String>
+            <x:String x:Key="TerminateButtonText">Terminate Selected</x:String>
+            <x:String x:Key="RefreshButtonText">Refresh List</x:String>
+            <x:String x:Key="ProcessNameWatermark">Process Display Name</x:String>
+            <x:String x:Key="ProcessIdWatermark">Process ID(s) (comma-separated)</x:String>
+            <x:String x:Key="CategorySelectorPlaceholder">Select Category</x:String>
+            <x:String x:Key="AddButtonText">Add Process</x:String>
+            <x:String x:Key="RemoveButtonText">Remove Selected</x:String>
+            
+            <!-- Process Categories and Definitions -->
+            <ResourceDictionary x:Key="ProcessDefinitions">
+                <ResourceDictionary.MergedDictionaries>
+                    <!-- A.I. Category -->
+                    <ResourceDictionary>
+                        <x:Array x:Key="AI.Processes" Type="sys:String">
+                            <x:String>ChatGPT (LenX)|ChatGPT</x:String>
+                        </x:Array>
+                    </ResourceDictionary>
+                    
+                    <!-- Media Category -->
+                    <ResourceDictionary>
+                        <x:Array x:Key="Media.Processes" Type="sys:String">
+                            <x:String>PaintShop Pro (Corel/Jasc)|Paint Shop Pro 9,Paint Shop Pro 8,Corel PaintShop Pro</x:String>
+                        </x:Array>
+                    </ResourceDictionary>
+                    
+                    <!-- Games Category -->
+                    <ResourceDictionary>
+                        <x:Array x:Key="Games.Processes" Type="sys:String">
+                            <x:String>Fallout (3/NV/4)|f4se_loader,Fallout4,Fallout4Launcher,Fallout3,FalloutNV</x:String>
+                            <x:String>Skyrim (Legacy/SE)|Skyrim,SkyrimSE</x:String>
+                        </x:Array>
+                    </ResourceDictionary>
+                </ResourceDictionary.MergedDictionaries>
+            </ResourceDictionary>
+            
+            <!-- Button Styles -->
+            <Style x:Key="danger" Selector="Button.danger">
+                <Setter Property="Background" Value="#dc3545"/>
+                <Setter Property="Foreground" Value="White"/>
+            </Style>
+            <Style x:Key="success" Selector="Button.success">
+                <Setter Property="Background" Value="#28a745"/>
+                <Setter Property="Foreground" Value="White"/>
+            </Style>
+            <Style x:Key="warning" Selector="Button.warning">
+                <Setter Property="Background" Value="#ffc107"/>
+                <Setter Property="Foreground" Value="Black"/>
+            </Style>
+            
+            <!-- List Styles -->
+            <Style x:Key="process-list" Selector="ListBox.process-list">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="0"/>
+            </Style>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
