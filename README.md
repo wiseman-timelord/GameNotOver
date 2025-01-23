@@ -51,7 +51,6 @@ Selection; Options = 1-2, Exit = X: 2
 │   ├── interface.ps1  # Interface script
 │   └── interface.xml  # Interface config 
 ├── data\  # Data folder created by installer
-│   ├── list.txt  # Customizeable process list
 │   └── AvaloniaUI\  # Avalonia UI components installed by installer from SDK
 │   │   ├── Avalonia.Base.dll
 │   │   ├── Avalonia.Controls.dll
