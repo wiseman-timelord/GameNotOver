@@ -10,8 +10,22 @@ GameNotOver is a PowerShell application tailored for Windows users, enabling the
 3. **Robust Error Handling:** Designed to gracefully manage errors, such as unfound processes, ensuring a smooth user experience without abrupt script termination.
 4. **Administrative Privilege Check:** Incorporates a built-in check for administrative rights, guaranteeing that the script has the required permissions to perform its tasks.
 
-### Output:
-- Picture coming soon...
+### Preview:
+- Picture of main program coming soon...
+- The Batch Installer/Launcher...
+```
+========================================================================================================================
+    GameNotOver - Main Menu
+========================================================================================================================
+
+    1. Launch GameNotOver
+
+    2. Install Requirements
+
+------------------------------------------------------------------------------------------------------------------------
+Selection; Options = 1-2, Exit = X: 2
+```
+
 
 ### Requirements:
 - Windows 10 - the scripts are in Powershell.
