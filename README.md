@@ -39,7 +39,10 @@ Selection; Options = 1-2, Exit = X: 2
 5. Select "Exit Menu" to gracefully exit GameNotOver, or keep the app in the background.
 * To run from taskbar the "GameNotOver.lnk" is provided, but it needs new locations in its properties.
 
-## Development
+## Notes
+- [Avalonia UI](https://github.com/AvaloniaUI/Avalonia) - Multi-Platform Graphical User Interface.
+
+### Development
 - Files list...
 ```
 .\  # Root folder
