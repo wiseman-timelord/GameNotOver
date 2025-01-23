@@ -54,10 +54,13 @@ Selection; Options = 1-2, Exit = X: 2
 ├── data\  # Data folder created by installer
 │   ├── list.txt  # Customizeable process list
 │   └── AvaloniaUI\  # Avalonia UI components installed by installer from SDK
-│       ├── Avalonia.dll
-│       ├── Avalonia.Controls.dll
-│       ├── Avalonia.Markup.Xaml.dll
-│       └── ...
+│   │   ├── Avalonia.Base.dll
+│   │   ├── Avalonia.Controls.dll
+│   │   ├── Avalonia.Desktop.dll
+│   │   ├── Avalonia.Markup.dll
+│   │   ├── Avalonia.Markup.Xaml.dll
+│   │   ├── Avalonia.Styling.dll
+│   │   └── Avalonia.Themes.Default.dll
 └── temp\  =used during install
 ```
 
