@@ -33,7 +33,7 @@ GameNotOver is a PowerShell application tailored for Windows users, enabling the
 
 ### Preview:
 - Picture of main program (early)...
-- 
+  
 ![preview_image](media/WPF_GUI.jpg)
 - The Batch Installer/Launcher...
 ```
