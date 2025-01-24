@@ -51,9 +51,9 @@ Selection; Options = 1-2, Exit = X: 2
 
 
 ### Requirements:
-- Windows 10 - the scripts are in Powershell.
-- Libraries - The installer handles, AvaloniaUI and DotNet-Sdk (zip).
-- [DotNet](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) - Avalonia requires either DotNet 6 or 8.
+- Windows 7-11 - The scripts are in Powershell, but its a Windows program.
+- Libraries - Other than Dot Net its all built-in.
+- [DotNet](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) v4.5-7 - The link is for v8, its, made and tested, on that version.
 
 ### Usage:
 1. Execute the batch "GameNotOver.bat" as Administrator, to launch the batch menu.
