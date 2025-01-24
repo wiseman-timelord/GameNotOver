@@ -24,10 +24,10 @@ class App : Application {
 class MainWindow : Window {
     [XmlDocument]$ConfigXml
     [hashtable]$Categories = @{}
-    [System.Collections.ObjectModel.ObservableCollection[string]]$ProcessItems = `
-        New-Object System.Collections.ObjectModel.ObservableCollection[string]
+    [System.Collections.ObjectModel.ObservableCollection[string]]$ProcessItems = New-Object System.Collections.ObjectModel.ObservableCollection[string]
     [string]$StatusMessage = ""
     hidden [bool]$IsClosing = $false
+    hidden [System.Timers.Timer]$ProcessTimer
 
     MainWindow() {
         try {
@@ -111,9 +111,9 @@ class MainWindow : Window {
 
     [void] StartProcessMonitor() {
         $self = $this
-        $timer = New-Object System.Timers.Timer
-        $timer.Interval = 5000 # Update every 5 seconds
-        $timer.Add_Elapsed({
+        $this.ProcessTimer = New-Object System.Timers.Timer
+        $this.ProcessTimer.Interval = 5000
+        $this.ProcessTimer.Add_Elapsed({
             $self.Dispatcher.InvokeAsync({
                 foreach ($cat in $self.Categories.Keys) {
                     foreach ($name in $self.Categories[$cat].Keys) {
@@ -122,7 +122,7 @@ class MainWindow : Window {
                 }
             })
         })
-        $timer.Start()
+        $this.ProcessTimer.Start()
     }
 
     [void] SaveConfig() {
@@ -236,11 +236,15 @@ class MainWindow : Window {
 
     [void] HandleClosing() {
         try {
+            if ($this.ProcessTimer) {
+                $this.ProcessTimer.Stop()
+                $this.ProcessTimer.Dispose()
+            }
             $this.SaveConfig()
             $this.IsClosing = $true
             $this.Close()
         } catch {
-            $this.StatusMessage = "Error during shutdown"
+            $this.StatusMessage = "Error during shutdown: $_"
         }
     }
 }

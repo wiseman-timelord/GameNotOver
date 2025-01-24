@@ -5,9 +5,8 @@ setlocal enabledelayedexpansion
 REM Global Variables
 set "TITLE=GameNotOver
 
-REM Set window title and color scheme
+REM Set window title
 title %TITLE%
-color 1F
 
 :: DP0 TO SCRIPT BLOCK, DO NOT, MODIFY or MOVE: START
 set "ScriptDirectory=%~dp0"
@@ -55,6 +54,7 @@ set /p "choice=Selection; Options = 1-2, Exit = X: "
 REM Process user input
 if /i "%choice%"=="1" (
     cls
+    color 1F
     call :DisplayTitle "Initialization"
     echo Starting %TITLE%...
     powershell -NoProfile -ExecutionPolicy Bypass -File .\launcher.ps1
@@ -67,6 +67,7 @@ if /i "%choice%"=="1" (
 
 if /i "%choice%"=="2" (
     cls
+    color 1F
     call :DisplayTitle "Installation"
     echo Installing Requirements...
     powershell -NoProfile -ExecutionPolicy Bypass -File .\installer.ps1

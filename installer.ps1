@@ -6,98 +6,101 @@ function Test-AdminPrivileges {
     return $currentUser.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 }
 
-function Test-AvaloniaUI {
+function Test-DotNetInstallation {
     try {
-        $requiredFiles = @(
-            "Avalonia.Base.dll",
-            "Avalonia.Controls.dll",
-            "Avalonia.Desktop.dll",
-            "Avalonia.Markup.dll",
-            "Avalonia.Markup.Xaml.dll",
-            "Avalonia.Styling.dll",
-            "Avalonia.Themes.Simple.dll"
-        )
-        
-        $missingFiles = $requiredFiles | Where-Object { -not (Test-Path ".\data\AvaloniaUI\$_") }
-        if ($missingFiles.Count -gt 0) {
-            Write-Host "Missing files: $($missingFiles -join ', ')"
+        $dotnetVersion = (dotnet --list-sdks) -match "6.0|8.0"
+        if (-not $dotnetVersion) {
+            throw "Required .NET SDK (6.0 or 8.0) is not installed."
         }
-        return $missingFiles.Count -eq 0
+        return $true
     } catch {
         return $false
     }
+}
+
+function Initialize-CleanInstall {
+    param (
+        [string[]]$Directories
+    )
+    foreach ($dir in $Directories) {
+        if (Test-Path $dir) {
+            Write-Host "Removing existing directory: $dir"
+            Remove-Item -Path $dir -Recurse -Force -ErrorAction Stop
+        }
+    }
+}
+
+function Test-RequiredFiles {
+    param (
+        [string]$Directory,
+        [string[]]$RequiredFiles
+    )
+    $missingFiles = $RequiredFiles | Where-Object { -not (Test-Path (Join-Path -Path $Directory -ChildPath $_)) }
+    if ($missingFiles.Count -gt 0) {
+        Write-Host "Missing files: $($missingFiles -join ', ')"
+        return $false
+    }
+    return $true
 }
 
 function Initialize-Directories {
     param (
         [string[]]$Directories
     )
-    
     foreach ($dir in $Directories) {
         if (-not (Test-Path $dir)) {
-            Write-Host "Creating directory: $dir"
             New-Item -ItemType Directory -Path $dir -Force | Out-Null
-        } else {
-            Write-Host "Directory already exists: $dir"
         }
     }
 }
 
 function Install-AvaloniaUI {
     try {
-        $avaloniaVersion = "11.0.5"
+        $avaloniaVersion = "11.2.3"
         $avaloniaPackages = @(
             "Avalonia.Desktop",
             "Avalonia",
             "Avalonia.Skia",
             "Avalonia.Themes.Simple"
         )
-        
-        # Create temp directory if it doesn't exist
-        Initialize-Directories -Directories @(".\temp", ".\data", ".\data\AvaloniaUI")
-        
+
+        Initialize-Directories @(".\temp", ".\data", ".\data\AvaloniaUI")
+
         foreach ($package in $avaloniaPackages) {
             $packageUrl = "https://www.nuget.org/api/v2/package/$package/$avaloniaVersion"
             $packagePath = ".\temp\$package.nupkg"
-            
-            # Download package
-            Write-Host "Downloading $package package..."
+
+            Write-Host "Downloading $package..."
             Invoke-WebRequest -Uri $packageUrl -OutFile $packagePath -ErrorAction Stop
-            
-            # Rename .nupkg to .zip
-            Write-Host "Renaming $package.nupkg to .zip..."
+
+            Write-Host "Extracting $package..."
             Rename-Item -Path $packagePath -NewName "$package.zip" -Force
-            
-            # Extract package
-            Write-Host "Extracting $package package..."
             Expand-Archive -Path ".\temp\$package.zip" -DestinationPath ".\temp\$package" -Force
-            
-            # Copy DLLs from net6.0 directory
-            $sourceDir = ".\temp\$package\lib\net6.0"
-            if (-not (Test-Path $sourceDir)) {
-                Write-Host "Warning: No net6.0 directory found in $package"
-                continue
-            }
-            
-            $dllFiles = Get-ChildItem -Path $sourceDir -Filter *.dll
-            if ($dllFiles.Count -eq 0) {
-                Write-Host "Warning: No DLLs found in $sourceDir"
-                continue
-            }
-            
+
+            $sourceDir = ".\temp\$package\lib"
+            $destinationDir = ".\data\AvaloniaUI"
+
+            $dllFiles = Get-ChildItem -Path $sourceDir -Recurse -Filter *.dll |
+                Where-Object { $_.Directory.Name -match "net6.0|net8.0" }
+
             foreach ($file in $dllFiles) {
-                $destinationPath = Join-Path -Path ".\data\AvaloniaUI" -ChildPath $file.Name
-                Write-Host "Copying $($file.Name) from $sourceDir"
+                $destinationPath = Join-Path -Path $destinationDir -ChildPath $file.Name
                 Copy-Item -Path $file.FullName -Destination $destinationPath -Force
             }
         }
-        
-        # Verify installation
-        if (-not (Test-AvaloniaUI)) {
+
+        # Verify all required files
+        $requiredFiles = @(
+            "Avalonia.Base.dll",
+            "Avalonia.Controls.dll",
+            "Avalonia.Desktop.dll",
+            "Avalonia.Markup.dll",
+            "Avalonia.Markup.Xaml.dll",
+            "Avalonia.Themes.Simple.dll"
+        )
+        if (-not (Test-RequiredFiles -Directory ".\data\AvaloniaUI" -RequiredFiles $requiredFiles)) {
             throw "Missing required files after installation"
         }
-        
-        Write-Host "Avalonia UI installed successfully!" -ForegroundColor Green
     } catch {
         throw "Failed to install Avalonia UI: $_"
     }
@@ -106,27 +109,23 @@ function Install-AvaloniaUI {
 # Main installation script
 try {
     if (-not (Test-AdminPrivileges)) {
-        throw "This script requires administrative privileges. Please run as administrator."
+        throw "This script requires administrative privileges."
     }
+
+    if (-not (Test-DotNetInstallation)) {
+        throw "Please install .NET 6.0 or .NET 8.0 SDK before proceeding."
+    }
+
+    # Force clean install
+    Initialize-CleanInstall -Directories @(".\data", ".\temp")
 
     Write-Host "Installing Requirements..."
-    
-    # Check and install Avalonia UI if needed
-    if (-not (Test-AvaloniaUI)) {
-        Install-AvaloniaUI
-    }
 
-    # Create interface.xml if it doesn't exist
+    Install-AvaloniaUI
+
     $interfaceXmlPath = ".\scripts\interface.xml"
     if (-not (Test-Path $interfaceXmlPath)) {
-        Write-Host "Creating interface.xml..."
         Copy-Item ".\interface.xml" -Destination $interfaceXmlPath -Force
-    }
-
-    # Clean up temp directory
-    if (Test-Path ".\temp") {
-        Write-Host "Cleaning up temporary files..."
-        Remove-Item -Path ".\temp" -Recurse -Force
     }
 
     Write-Host "Installation completed successfully!" -ForegroundColor Green
@@ -135,6 +134,5 @@ try {
     exit 1
 }
 
-# Pause at the end to allow the user to see the output
 Write-Host "Press any key to continue . . ."
 $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
