@@ -7,8 +7,8 @@
 2. testing and bugfixing.
 
 ### Files list...
+- Package files...
 ```
-.\  # Root folder
 .\GameNotOver.bat  # Entry point for user, with menu for, launcher and installer.
 .\launcher.ps1  # Entry point for the main program.
 .\installer.ps1  # standalone installer program.
@@ -16,6 +16,9 @@
 │   ├── interface.ps1  # Interface script.
 │   ├── interface.xaml  # Xaml Interface code.
 │   ├── utility.ps1  # utility functions.
+```
+- Created by installer...
+```
 ├── data\  # Data folder.
 │   └── persistent.psd1  # Persistent configuration, created from default by installer.
 ```
@@ -29,7 +32,8 @@ GameNotOver is a PowerShell application tailored for Windows users, enabling the
 3. Batch Launcher - For easy running of Powershell Script at the click of a button.
 
 ### Preview:
-- Picture of main program coming soon...
+- Picture of main program (early)...
+![preview_image](media/WPF_GUI.jpg)
 - The Batch Installer/Launcher...
 ```
 ========================================================================================================================
