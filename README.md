@@ -24,7 +24,7 @@
 │   │   ├── Avalonia.Markup.dll
 │   │   ├── Avalonia.Markup.Xaml.dll
 │   │   └── Avalonia.Themes.Default.dll
-└── temp\  =used during install
+└── temp\  # used during install
 ```
 
 ### Description:
