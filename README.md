@@ -55,15 +55,13 @@ Selection; Options = 1-2, Exit = X: 2
 ### Requirements:
 - Windows 10 - the scripts are in Powershell.
 - Libraries - The installer handles, AvaloniaUI and DotNet-Sdk (zip).
-- Admin - Batch must be run with Administrative rights.
+- [DotNet](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) - Avalonia requires either DotNet 6 or 8.
 
 ### Usage:
-1. Execute the batch "GameNotOver.bat" to launch the gamenotover.ps1 powershell script as Admin.
-2. Utilize the arrow keys to navigate the menu and highlight the desired program for termination.
-3. Press the Enter key to initiate the termination of the selected program(s).
-4. A confirmation message will appear, prompting you to press any key to continue.
-5. Select "Exit Menu" to gracefully exit GameNotOver, or keep the app in the background.
-* To run from taskbar the "GameNotOver.lnk" is provided, but it needs new locations in its properties.
+1. Execute the batch "GameNotOver.bat" as Administrator, to launch the batch menu.
+2. Select 2 to install any library requirements, this will take you to the menu after.
+3. Select 1 to run the main program, this runs `.\launcher.ps1`.
+4. ...
 
 ## Notes
 - [Avalonia UI](https://github.com/AvaloniaUI/Avalonia) - Multi-Platform Graphical User Interface.
