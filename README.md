@@ -9,16 +9,19 @@
 ### Files list...
 ```
 .\  # Root folder
-.\GameNotOver.bat  # Entry point for user
-.\main_script.ps1  # Entry point for the main program
-├── scripts\  # Scripts folder
-│   ├── interface.ps1  # Interface script
-├── data\  # Data folder
-│   └── ****.***  # some kind of persistent configuration file.
+.\GameNotOver.bat  # Entry point for user, with menu for, launcher and installer.
+.\launcher.ps1  # Entry point for the main program.
+.\installer.ps1  # standalone installer program.
+├── scripts\  # Scripts folder.
+│   ├── interface.ps1  # Interface script.
+│   ├── interface.xaml  # Xaml Interface code.
+│   ├── utility.ps1  # utility functions.
+├── data\  # Data folder.
+│   └── persistent.psd1  # Persistent configuration, created from default by installer.
 ```
 
 ### Description:
-GameNotOver is a PowerShell application tailored for Windows users, enabling them to forcefully close all instances of selected programs through an GUI. When using programs in windows 10, upon, exiting or crashing, some programs may leave a residual 500MB-4GB, that, lock files in place or prevent loading, for example beta programes, additionally some programs may freeze, which may even cause issues shutting down. My application is a manageable shortlist for closing all instances of pre-selected troublesome programs, thus, saving on repeatingly, running task manager and searching for running processes, each time. There are some default apps already, but as I mentioned you will be able to manage the list within the program.
+GameNotOver is a PowerShell application tailored for Windows users, enabling them to forcefully close all instances of selected programs through an GUI. When using programs in windows 10, upon, exiting or crashing, some programs may leave a residual 500MB-4GB, that, lock files in place or prevent loading, for example, beta or old, software, which may even cause issues, running the program again and/or shutting down the system. My application is a manageable shortlist for closing all instances of pre-selected troublesome programs of your choice, thus, saving on repeatingly, running task manager and searching for running processes, each time.
 
 ### Features:
 1. Graphical User Interface - For managing the list and user interacctions, with persistence in the text file in `.\data`.
