@@ -58,8 +58,8 @@ Selection; Options = 1-2, Exit = X: 2
 ### Usage:
 1. Execute the batch "GameNotOver.bat" as Administrator, to launch the batch menu.
 2. Select 2 to install any library requirements, this will take you to the menu after.
-3. Select 1 to run the main program, this runs `.\main_script.ps1`.
-4. ...
+3. Select 1 to run the program, this runs `.\launcher.ps1`, the entry point for the main scripts.
+4. ...TBA
 
 ## Notes
 - None currently
