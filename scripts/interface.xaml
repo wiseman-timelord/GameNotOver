@@ -3,8 +3,13 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Title="Game Not Over!"
     WindowStartupLocation="CenterScreen"
-    MinWidth="800" MinHeight="600">
+    MinWidth="400" MinHeight="450">
     <Window.Resources>
+        <!-- Same resources as before -->
+        <SolidColorBrush x:Key="TextColor" Color="Black"/>
+        <SolidColorBrush x:Key="StatusTextColor" Color="DarkGray"/>
+        <SolidColorBrush x:Key="ListBorderBrush" Color="Gray"/>
+
         <Style x:Key="BaseButton" TargetType="Button">
             <Setter Property="Height" Value="30"/>
             <Setter Property="Margin" Value="5,0"/>
@@ -30,16 +35,17 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
         <Style TargetType="ListBoxItem">
             <Setter Property="Padding" Value="8,4"/>
             <Setter Property="Margin" Value="0,2"/>
             <Style.Triggers>
                 <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="#007ACC"/>
+                    <Setter Property="Background" Value="DodgerBlue"/>
                     <Setter Property="Foreground" Value="White"/>
                 </Trigger>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#E5E5E5"/>
+                    <Setter Property="Background" Value="LightGray"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -51,40 +57,46 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Name="TitleText" 
-                   Grid.Row="0" 
+        <TextBlock Grid.Row="0"
                    Text="Game Not Over!"
-                   FontSize="32" 
+                   FontSize="32"
                    FontWeight="Bold"
+                   Foreground="{StaticResource TextColor}"
                    HorizontalAlignment="Center"
                    Margin="0,0,0,20"/>
 
-        <ListBox Name="ProcessList" 
+        <ListBox Name="ProcessList"
                 Grid.Row="1"
                 Margin="0,10"
                 BorderThickness="1"
+                BorderBrush="{StaticResource ListBorderBrush}"
                 ItemsSource="{Binding ProcessItems}"/>
 
-        <UniformGrid Grid.Row="2" Rows="1" Margin="0,10,0,15">
+        <UniformGrid Grid.Row="2" Rows="1" Margin="0,10,0,5">
             <Button Name="AddProcess" Style="{StaticResource BaseButton}"
                     Content="Add"/>
             <Button Name="DeleteProcess" Style="{StaticResource BaseButton}"
                     Content="Delete"/>
+            <Button Name="SaveConfig" Style="{StaticResource BaseButton}"
+                    Content="Save"/>
+        </UniformGrid>
+
+        <UniformGrid Grid.Row="3" Rows="1" Margin="0,5,0,15">
             <Button Name="RescanProcesses" Style="{StaticResource BaseButton}"
                     Content="Rescan"/>
             <Button Name="TerminateProcess" Style="{StaticResource BaseButton}"
                     Content="Terminate"/>
-            <Button Name="SaveConfig" Style="{StaticResource BaseButton}"
-                    Content="Save"/>
             <Button Name="ExitApp" Style="{StaticResource BaseButton}"
                     Content="Exit"/>
         </UniformGrid>
 
-        <StatusBar Grid.Row="3" Height="25">
-            <TextBlock Name="StatusText" 
-                      Text="{Binding StatusMessage}"/>
+        <StatusBar Grid.Row="4" Height="25">
+            <TextBlock Name="StatusText"
+                      Text="{Binding StatusMessage}"
+                      Foreground="{StaticResource StatusTextColor}"/>
         </StatusBar>
     </Grid>
 </Window>

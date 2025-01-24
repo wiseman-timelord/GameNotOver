@@ -20,10 +20,10 @@ class ProcessMonitor {
     hidden [hashtable]$Settings = @{
         RefreshInterval = 5000
         WindowTitle = "Game Not Over!"
-        WindowWidth = 800
-        WindowHeight = 600
+        WindowWidth = 400
+        WindowHeight = 450
         MinWidth = 400
-        MinHeight = 300
+        MinHeight = 450
         ProcessNameWatermark = "Enter process display name..."
         ProcessIdWatermark = "Enter process ID(s) separated by commas..."
         CategorySelectorWatermark = "Select category..."
@@ -128,62 +128,90 @@ class MainWindow : Window {
     }
 
     [void] InitializeComponent() {
+        Add-Type -AssemblyName PresentationFramework
+        
         $xamlPath = Join-Path $PSScriptRoot "interface.xaml"
         if (-not (Test-Path $xamlPath)) {
             throw "XAML file not found: $xamlPath"
         }
-
+        
         $xamlContent = [System.IO.File]::ReadAllText($xamlPath)
         $reader = [System.Xml.XmlNodeReader]::new([xml]$xamlContent)
-
-        $window = [System.Windows.Markup.XamlReader]::Load($reader)
-        if (-not $window) {
-            throw "Failed to load XAML"
+        
+        try {
+            $window = [System.Windows.Markup.XamlReader]::Load($reader)
+            if (-not $window) {
+                throw "Failed to load XAML window"
+            }
+            
+            [System.Windows.NameScope]::SetNameScope($this, (New-Object System.Windows.NameScope))
+            
+            $this.Width = $window.Width
+            $this.Height = $window.Height
+            $this.Title = $window.Title
+            $this.SizeToContent = $window.SizeToContent
+            $this.Resources = $window.Resources
+            
+            # Get the root grid and store it
+            $rootGrid = $window.Content
+            $this.Content = $rootGrid
+            
+            # Helper function to find elements by name
+            function Find-NamedElement {
+                param($parent, $name)
+                if ($parent.Name -eq $name) { return $parent }
+                foreach ($child in $parent.Children) {
+                    if ($child.Name -eq $name) { return $child }
+                    $result = Find-NamedElement $child $name
+                    if ($result) { return $result }
+                }
+                return $null
+            }
+            
+            # Register ProcessList
+            $processList = Find-NamedElement $rootGrid 'ProcessList'
+            if ($processList) {
+                $this.RegisterName('ProcessList', $processList)
+            }
+            
+            # Register buttons
+            $buttonNames = @('AddProcess', 'DeleteProcess', 'RescanProcesses', 
+                            'TerminateProcess', 'SaveConfig', 'ExitApp')
+            foreach ($name in $buttonNames) {
+                $button = Find-NamedElement $rootGrid $name
+                if ($button) {
+                    $this.RegisterName($name, $button)
+                }
+            }
         }
-
-        $this.Width = $window.Width
-        $this.Height = $window.Height
-        $this.Title = $window.Title
-        $this.Content = $window.Content
-        $this.Resources = $window.Resources
-        $this.SizeToContent = $window.SizeToContent
-
-        # Apply theme colors directly to UI elements
-        $this.ApplyTheme()
+        catch {
+            throw "Failed to load XAML: $_"
+        }
     }
 
     [void] ApplyConfiguration() {
         try {
-            $settings = $this.Monitor.Settings
-            $theme = $this.Monitor.Theme
+            $this.Width = $this.Monitor.Settings.WindowWidth
+            $this.Height = $this.Monitor.Settings.WindowHeight
+            $this.MinWidth = $this.Monitor.Settings.MinWidth
+            $this.MinHeight = $this.Monitor.Settings.MinHeight
+            $this.Title = $this.Monitor.Settings.WindowTitle
 
-            $this.Width = $settings.WindowWidth
-            $this.Height = $settings.WindowHeight
-            $this.MinWidth = $settings.MinWidth
-            $this.MinHeight = $settings.MinHeight
-            $this.Title = $settings.WindowTitle
+            $this.Background = New-Object SolidColorBrush($this.Monitor.Theme.Background)
 
-            # Apply theme colors
-            $this.Background = New-Object SolidColorBrush($theme.Background)
-
-            # Button configuration with fallbacks
             $buttonConfigs = @{
-                "AddProcess" = @{ Color = $theme.PrimaryButton; Fallback = [Colors]::DodgerBlue }
-                "DeleteProcess" = @{ Color = $theme.DangerButton; Fallback = [Colors]::Red }
-                "RescanProcesses" = @{ Color = $theme.PrimaryButton; Fallback = [Colors]::DodgerBlue }
-                "TerminateProcess" = @{ Color = $theme.DangerButton; Fallback = [Colors]::Red }
-                "SaveConfig" = @{ Color = $theme.PrimaryButton; Fallback = [Colors]::DodgerBlue }
-                "ExitApp" = @{ Color = $theme.WarningButton; Fallback = [Colors]::Orange }
+                "AddProcess" = $this.Monitor.Theme.PrimaryButton
+                "DeleteProcess" = $this.Monitor.Theme.DangerButton
+                "RescanProcesses" = $this.Monitor.Theme.PrimaryButton
+                "TerminateProcess" = $this.Monitor.Theme.DangerButton
+                "SaveConfig" = $this.Monitor.Theme.PrimaryButton
+                "ExitApp" = $this.Monitor.Theme.WarningButton
             }
 
             foreach ($btnName in $buttonConfigs.Keys) {
                 $button = $this.FindName($btnName)
                 if ($button -is [Button]) {
-                    $btnColor = $buttonConfigs[$btnName].Fallback
-                    try {
-                        $btnColor = $buttonConfigs[$btnName].Color
-                    } catch {}
-                    $button.Background = New-Object SolidColorBrush($btnColor)
+                    $button.Background = New-Object SolidColorBrush($buttonConfigs[$btnName])
                     $button.Foreground = New-Object SolidColorBrush([Colors]::White)
                 }
             }
@@ -194,45 +222,45 @@ class MainWindow : Window {
         }
     }
 
-    [void] ApplyTheme() {
-        $theme = $this.Monitor.Theme
-
-        # Apply theme colors directly to UI elements
-        $titleText = $this.Content.FindName("TitleText")
-        if ($titleText -is [TextBlock]) {
-            $titleText.Foreground = New-Object SolidColorBrush($theme.TextColor)
-        }
-
-        $statusText = $this.Content.FindName("StatusText")
-        if ($statusText -is [TextBlock]) {
-            $statusText.Foreground = New-Object SolidColorBrush($theme.StatusTextColor)
-        }
-
-        $processList = $this.Content.FindName("ProcessList")
-        if ($processList -is [ListBox]) {
-            $processList.BorderBrush = New-Object SolidColorBrush($theme.ListBorder)
-        }
-    }
-
     [void] ConfigureEvents() {
-        $this.FindName("AddProcess").Add_Click({ $this.ShowAddProcessDialog() })
-        $this.FindName("DeleteProcess").Add_Click({ $this.DeleteSelectedProcess() })
-        $this.FindName("RescanProcesses").Add_Click({ $this.Monitor.RefreshProcesses() })
-        $this.FindName("TerminateProcess").Add_Click({ $this.TerminateSelectedProcess() })
-        $this.FindName("SaveConfig").Add_Click({ $this.Monitor.SaveConfiguration() })
-        $this.FindName("ExitApp").Add_Click({ $this.Close() })
+        $addProcessButton = $this.FindName("AddProcess")
+        $deleteProcessButton = $this.FindName("DeleteProcess")
+        $rescanProcessesButton = $this.FindName("RescanProcesses")
+        $terminateProcessButton = $this.FindName("TerminateProcess")
+        $saveConfigButton = $this.FindName("SaveConfig")
+        $exitAppButton = $this.FindName("ExitApp")
+        $processList = $this.FindName("ProcessList")
 
-        $this.Closing += {
-            param($s, $e)
+        if ($addProcessButton) {
+            $addProcessButton.Add_Click({ $this.ShowAddProcessDialog() })
+        }
+        if ($deleteProcessButton) {
+            $deleteProcessButton.Add_Click({ $this.DeleteSelectedProcess() })
+        }
+        if ($rescanProcessesButton) {
+            $rescanProcessesButton.Add_Click({ $this.Monitor.RefreshProcesses() })
+        }
+        if ($terminateProcessButton) {
+            $terminateProcessButton.Add_Click({ $this.TerminateSelectedProcess() })
+        }
+        if ($saveConfigButton) {
+            $saveConfigButton.Add_Click({ $this.Monitor.SaveConfiguration() })
+        }
+        if ($exitAppButton) {
+            $exitAppButton.Add_Click({ $this.Close() })
+        }
+        
+        $this.Add_Closing({ 
+            param($sender, $e)
             if (-not $this.IsClosing) {
                 $e.Cancel = $true
                 $this.HandleClosing()
             }
-        }
+        })
     }
 
     [void] ShowAddProcessDialog() {
-        $dialog = [AddProcessDialog]::new($this.Monitor, $this.Monitor.Theme)
+        $dialog = [AddProcessDialog]::new($this.Monitor)
         $dialog.Owner = $this
         $dialog.ShowDialog()
     }
@@ -279,7 +307,7 @@ class AddProcessDialog : Window {
     hidden [TextBox]$NameBox
     hidden [TextBox]$IdBox
 
-    AddProcessDialog([ProcessMonitor]$monitor, [hashtable]$theme) {
+    AddProcessDialog([ProcessMonitor]$monitor) {
         $this.Monitor = $monitor
         $this.Title = "Add New Process"
         $this.Width = 400
@@ -287,20 +315,7 @@ class AddProcessDialog : Window {
         $this.WindowStartupLocation = "CenterOwner"
         $this.ResizeMode = "NoResize"
 
-        # Color handling with fallbacks
-        $colors = @{
-            Background = $theme.Background
-            Text = $theme.TextColor
-            Primary = $theme.PrimaryButton
-            Warning = $theme.WarningButton
-        }
-
-        $brushes = @{}
-        foreach ($key in $colors.Keys) {
-            $brushes[$key] = New-Object SolidColorBrush($colors[$key])
-        }
-
-        $this.Background = $brushes.Background
+        $this.Background = New-Object SolidColorBrush($this.Monitor.Theme.Background)
 
         $grid = New-Object Grid
         $grid.Margin = 15
@@ -313,7 +328,7 @@ class AddProcessDialog : Window {
         $nameLabel = New-Object Label
         $nameLabel.Content = "Process Name:"
         $nameLabel.Margin = "0,5"
-        $nameLabel.Foreground = $brushes.Text
+        $nameLabel.Foreground = New-Object SolidColorBrush($this.Monitor.Theme.TextColor)
         [Grid]::SetRow($nameLabel, 0)
         $grid.Children.Add($nameLabel)
 
@@ -325,7 +340,7 @@ class AddProcessDialog : Window {
         $idLabel = New-Object Label
         $idLabel.Content = "Process ID(s) (comma-separated):"
         $idLabel.Margin = "0,5"
-        $idLabel.Foreground = $brushes.Text
+        $idLabel.Foreground = New-Object SolidColorBrush($this.Monitor.Theme.TextColor)
         [Grid]::SetRow($idLabel, 2)
         $grid.Children.Add($idLabel)
 
@@ -345,7 +360,7 @@ class AddProcessDialog : Window {
         $okButton.Width = 75
         $okButton.Height = 25
         $okButton.Margin = "0,0,10,0"
-        $okButton.Background = $brushes.Primary
+        $okButton.Background = New-Object SolidColorBrush($this.Monitor.Theme.PrimaryButton)
         $okButton.Foreground = New-Object SolidColorBrush([Colors]::White)
         $okButton.Add_Click({ $this.AddProcess() })
 
@@ -353,7 +368,7 @@ class AddProcessDialog : Window {
         $cancelButton.Content = "Cancel"
         $cancelButton.Width = 75
         $cancelButton.Height = 25
-        $cancelButton.Background = $brushes.Warning
+        $cancelButton.Background = New-Object SolidColorBrush($this.Monitor.Theme.WarningButton)
         $cancelButton.Foreground = New-Object SolidColorBrush([Colors]::White)
         $cancelButton.Add_Click({ $this.DialogResult = $false })
 

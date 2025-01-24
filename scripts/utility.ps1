@@ -5,7 +5,7 @@ function Import-GameConfiguration {
     try {
         $config = Import-PowerShellData1 -Path $Path
         if (-not $config.Categories) {
-            throw "Invalid configuration format: 'Categories' section is missing"
+            throw "Invalid configuration format: Missing Categories"
         }
         return $config
     } catch {
@@ -19,9 +19,9 @@ function Save-GameConfiguration {
         [string]$Path = ".\data\configuration.psd1"
     )
     if (-not $Config.Categories) {
-        throw "Invalid configuration format: 'Categories' section is missing"
+        throw "Invalid configuration format: Missing Categories"
     }
-    Export-PowerShellData1 -Data $Config -Path $Path
+    Export-PowerShellData1 -Data $Config -Path $Path -Name
 }
 
 function Get-ProcessCount {
