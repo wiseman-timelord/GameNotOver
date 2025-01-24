@@ -24,7 +24,7 @@
 GameNotOver is a PowerShell application tailored for Windows users, enabling them to forcefully close all instances of selected programs through an GUI. When using programs in windows 10, upon, exiting or crashing, some programs may leave a residual 500MB-4GB, that, lock files in place or prevent loading, for example, beta or old, software, which may even cause issues, running the program again and/or shutting down the system. My application is a manageable shortlist for closing all instances of pre-selected troublesome programs of your choice, thus, saving on repeatingly, running task manager and searching for running processes, each time.
 
 ### Features:
-1. Graphical User Interface - For managing the list and user interacctions, with persistence in the text file in `.\data`.
+1. Graphical User Interface - For managing the list and user interacctions, with persistence in the psd1 file in `.\data`.
 2. Forceful Termination of Processes - Empowers users to forcefully close all occurrences of selected applications, effectively handling unresponsive or crashed programs.
 3. Batch Launcher - For easy running of Powershell Script at the click of a button.
 
