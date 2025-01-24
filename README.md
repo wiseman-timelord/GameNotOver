@@ -3,8 +3,9 @@
 
 ### Development
 - The plan is to have a GUI using WPF...
-1. The WPF GUI loads without error (see pictures), now need to test featres, and bugfixing.
-2. When working correctly, then make launcher self-destruct after launching, for clean operation.
+1. The WPF GUI loads without error (see pictures), now need to test features, and bugfixing.
+2. Editing entries will require to be able, to input 2-3 entries of processes per name of an item, to maintain the current effective method of configuration, ie, its not 1 process name per item, and it needs to be checked it is correctly going to close all relevant process names when the item is selected.
+2. When working correctly, then make launcher self-destruct after launching, for clean operation, or do so in a `.\QuickLaunch.bat`, that can then be added to a shortcut on the taskbar if done correctly with the `cmd /c "exampleFullPath"` in the target box.
 
 ### Files list...
 - Package files...
