@@ -79,7 +79,7 @@
             <Button Name="AddProcess" Style="{StaticResource BaseButton}"
                     Content="Add"/>
             <Button Name="DeleteProcess" Style="{StaticResource BaseButton}"
-                    Content="Delete"/>
+                    Content="Remove"/>
             <Button Name="SaveConfig" Style="{StaticResource BaseButton}"
                     Content="Save"/>
         </UniformGrid>
