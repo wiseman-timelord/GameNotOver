@@ -63,7 +63,7 @@ Selection; Options = 1-2, Exit = X: 2
 3. Select 1 to run the main program, this runs `.\launcher.ps1`.
 4. ...
 
-## Notes
+## Credits
 - [Avalonia UI](https://github.com/AvaloniaUI/Avalonia) - Multi-Platform Graphical User Interface.
 
 ## DISCLAIMER
