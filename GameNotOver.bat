@@ -62,6 +62,7 @@ if /i "%choice%"=="1" (
         echo Error launching %TITLE%
         pause
     )
+    pause
     goto MainMenu
 )
 
@@ -96,4 +97,13 @@ goto MainMenu
 goto MainMenu
 
 :end_of_script
+exit
+
+:end_of_script
+pause
+cls
+color 0B
+call :DisplayTitle "Termination"
+echo. 
+timeout /t 2 >nul
 exit
