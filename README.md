@@ -1,5 +1,5 @@
 # GameNotOver
-### Status: Updating Now - Here is the readme to the next version, it will be UPGRADED. For now the releases are the working but are non-GUI versions.
+### Status: Updating Now - Here is the readme to the next version, it will be UPGRADED. For now the releases are the working but are non-GUI versions. The purpose of going back to this program, is to figure out avalonia issues with a simpler program first.
 
 ### Development
 - The plan is to have a GUI using avalonia...
