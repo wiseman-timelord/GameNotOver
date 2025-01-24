@@ -3,8 +3,8 @@
 
 ### Development
 - The plan is to have a GUI using WPF...
-1. There was no need for an installer, as we are not using avalonia now. Program needs conversion from Avalonia to WPF.
-2. testing and bugfixing.
+1. The WPF GUI loads without error (see pictures), now need to test featres, and bugfixing.
+2. When working correctly, then make launcher self-destruct after launching.
 
 ### Files list...
 - Package files...
