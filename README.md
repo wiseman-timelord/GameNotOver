@@ -2,7 +2,7 @@
 ### Status: Updating Now - Here is the readme to the next version, it will be UPGRADED. For now the releases are the working but are non-GUI versions. The purpose of going back to this program, is to figure out GUI issues with a simpler program first.
 
 ### Development
-- The plan is to have a GUI using avalonia...
+- The plan is to have a GUI using WPF...
 1. There was no need for an installer, as we are not using avalonia now. Program needs conversion from Avalonia to WPF.
 2. testing and bugfixing.
 
