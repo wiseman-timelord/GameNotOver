@@ -1,8 +1,8 @@
 # GameNotOver
-### Status: Updating, below is the readme to the next version, it will be UPGRADED. For now the releases are the working but are non-GUI versions. The purpose of going back to this program, is to figure out GUI issues with a simpler program first.
+### Status: Updating, below is the readme to the next version, it will be UPGRADED. For now the releases are the working but are non-GUI versions.
 
 ### Development
-- The plan is to have a GUI using WPF...
+-  A revisit of a early program, to figure out GUI issues with a simpler program first. The plan is to have a GUI using WPF...
 1. The WPF GUI loads without error (see pictures), now need to test features, and bugfixing.
 2. Editing entries will require to be able, to input 2-3 entries of processes per name of an item, to maintain the current effective method of configuration, ie, its not 1 process name per item, and it needs to be checked it is correctly going to close all relevant process names when the item is selected.
 2. When working correctly, then make launcher self-destruct after launching, for clean operation, or do so in a `.\QuickLaunch.bat`, that can then be added to a shortcut on the taskbar if done correctly with the `cmd /c "exampleFullPath"` in the target box.
