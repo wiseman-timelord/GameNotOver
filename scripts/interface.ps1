@@ -9,110 +9,111 @@ Add-Type -AssemblyName PresentationFramework
 . $PSScriptRoot\utility.ps1
 
 class ProcessMonitor {
-    [hashtable]$Categories
-    [ObservableCollection[string]]$ProcessItems
-    [string]$StatusMessage
-    [hashtable]$Config
-    hidden [System.Timers.Timer]$Timer
-    hidden [Window]$Window
+   [hashtable]$Categories
+   [ObservableCollection[string]]$ProcessItems
+   [string]$StatusMessage
+   [hashtable]$Config
+   hidden [System.Timers.Timer]$Timer
+   hidden [Window]$Window
 
-    # Hardcoded Settings and Theme
-    hidden [hashtable]$Settings = @{
-        RefreshInterval = 5000
-        WindowTitle = "Game Not Over!"
-        WindowWidth = 400
-        WindowHeight = 450
-        MinWidth = 400
-        MinHeight = 450
-        ProcessNameWatermark = "Enter process display name..."
-        ProcessIdWatermark = "Enter process ID(s) separated by commas..."
-        CategorySelectorWatermark = "Select category..."
-    }
+   # Hardcoded Settings and Theme
+   hidden [hashtable]$Settings = @{
+       RefreshInterval = 5000
+       WindowTitle = "Game Not Over!"
+       WindowWidth = 400
+       WindowHeight = 450
+       MinWidth = 400
+       MinHeight = 450
+       ProcessNameWatermark = "Enter process display name..."
+       ProcessIdWatermark = "Enter process ID(s) separated by commas..."
+       CategorySelectorWatermark = "Select category..."
+   }
 
-    hidden [hashtable]$Theme = @{
-        Background = [Colors]::WhiteSmoke
-        HeaderBorder = [Colors]::LightGray
-        ListBorder = [Colors]::Gray
-        DangerButton = [Colors]::Red
-        WarningButton = [Colors]::Orange
-        PrimaryButton = [Colors]::DodgerBlue
-        TextColor = [Colors]::Black
-        StatusTextColor = [Colors]::DarkGray
-    }
+   hidden [hashtable]$Theme = @{
+       Background = [Colors]::WhiteSmoke
+       HeaderBorder = [Colors]::LightGray
+       ListBorder = [Colors]::Gray
+       DangerButton = [Colors]::Red
+       WarningButton = [Colors]::Orange
+       PrimaryButton = [Colors]::DodgerBlue
+       TextColor = [Colors]::Black
+       StatusTextColor = [Colors]::DarkGray
+   }
 
-    ProcessMonitor([Window]$window) {
-        $this.Window = $window
-        $this.ProcessItems = New-Object ObservableCollection[string]
-        $this.LoadConfiguration()
-        $this.InitializeTimer()
-    }
+   ProcessMonitor([Window]$window) {
+       $this.Window = $window
+       $this.ProcessItems = New-Object ObservableCollection[string]
+       $this.LoadConfiguration()
+       $this.InitializeTimer()
+   }
 
-    [void] InitializeTimer() {
-        $this.Timer = New-Object System.Timers.Timer
-        $this.Timer.Interval = $this.Settings.RefreshInterval
-        $this.Timer.AutoReset = $true
-        $this.Timer.Enabled = $true
-        $this.Timer.Add_Elapsed({
-            $this.Window.Dispatcher.Invoke({ $this.RefreshProcesses() })
-        })
-        $this.Timer.Start()
-    }
+   [void] InitializeTimer() {
+       $this.Timer = New-Object System.Timers.Timer
+       $this.Timer.Interval = $this.Settings.RefreshInterval
+       $this.Timer.AutoReset = $true
+       $this.Timer.Enabled = $true
+       $this.Timer.Add_Elapsed({
+           $this.Window.Dispatcher.Invoke({ $this.RefreshProcesses() })
+       })
+       $this.Timer.Start()
+   }
 
-    [void] LoadConfiguration() {
-        try {
-            $this.Config = Import-GameConfiguration
-            $this.Categories = $this.Config.Categories
-            $this.RefreshProcesses()
-            $this.StatusMessage = "Configuration loaded successfully"
-        } catch {
-            $this.StatusMessage = "Error loading configuration: $_"
-            throw
-        }
-    }
+   [void] LoadConfiguration() {
+       try {
+           $this.Config = Import-GameConfiguration
+           if (-not $this.Config.Categories.ContainsKey("Custom")) {
+               $this.Config.Categories = @{ Custom = @{} }
+           }
+           $this.Categories = $this.Config.Categories
+           $this.RefreshProcesses()
+           $this.StatusMessage = "Configuration loaded successfully"
+       } catch {
+           $this.StatusMessage = "Error loading configuration: $_"
+           throw
+       }
+   }
 
-    [void] SaveConfiguration() {
-        try {
-            $this.Config.Categories = $this.Categories
-            Save-GameConfiguration -Config $this.Config
-            $this.StatusMessage = "Configuration saved successfully"
-        } catch {
-            $this.StatusMessage = "Error saving configuration: $_"
-            throw
-        }
-    }
+   [void] SaveConfiguration() {
+       try {
+           $this.Config.Categories = $this.Categories
+           Save-GameConfiguration -Config $this.Config
+           $this.StatusMessage = "Configuration saved successfully"
+       } catch {
+           $this.StatusMessage = "Error saving configuration: $_"
+           throw
+       }
+   }
 
-    [void] RefreshProcesses() {
-        $this.ProcessItems.Clear()
-        foreach ($cat in $this.Categories.Keys | Sort-Object) {
-            foreach ($name in $this.Categories[$cat].Keys | Sort-Object) {
-                $count = Get-ProcessCount -ProcessNames $this.Categories[$cat][$name]
-                $this.ProcessItems.Add("$cat - $name ($count running)")
-            }
-        }
-    }
+   [void] RefreshProcesses() {
+       $this.ProcessItems.Clear()
+       foreach ($name in $this.Categories["Custom"].Keys | Sort-Object) {
+           $count = Get-ProcessCount -ProcessNames $this.Categories["Custom"][$name]
+           $this.ProcessItems.Add("$name ($count running)")
+       }
+   }
 
-    [void] TerminateProcess($selected) {
-        if ($selected -match '^(.+?) - (.+?) \(\d+') {
-            try {
-                $cat, $name = $matches[1,2]
-                $terminated = Stop-GameProcesses -ProcessNames $this.Categories[$cat][$name]
-                $this.RefreshProcesses()
-                $this.StatusMessage = if ($terminated) { "Process(es) terminated" } else { "No running processes found" }
-            } catch {
-                $this.StatusMessage = "Error terminating process: $_"
-            }
-        } else {
-            $this.StatusMessage = "No process selected"
-        }
-    }
+   [void] TerminateProcess($selected) {
+       if ($selected -match '^(.+?) \(\d+') {
+           try {
+               $name = $matches[1]
+               $terminated = Stop-GameProcesses -ProcessNames $this.Categories["Custom"][$name]
+               $this.RefreshProcesses()
+               $this.StatusMessage = if ($terminated) { "Process(es) terminated" } else { "No running processes found" }
+           } catch {
+               $this.StatusMessage = "Error terminating process: $_"
+           }
+       } else {
+           $this.StatusMessage = "No process selected"
+       }
+   }
 
-    [void] Dispose() {
-        if ($this.Timer) {
-            $this.Timer.Stop()
-            $this.Timer.Dispose()
-        }
-        $this.SaveConfiguration()
-    }
+   [void] Dispose() {
+       if ($this.Timer) {
+           $this.Timer.Stop()
+           $this.Timer.Dispose()
+       }
+       $this.SaveConfiguration()
+   }
 }
 
 class MainWindow : Window {
@@ -125,6 +126,12 @@ class MainWindow : Window {
         $this.DataContext = $this.Monitor
         $this.ApplyConfiguration()
         $this.ConfigureEvents()
+        
+        $this.AddHandler([System.Windows.Input.Keyboard]::PreviewKeyDownEvent,
+            [System.Windows.Input.KeyEventHandler]{
+                param($sender, $e)
+                if ($e.Key -eq 'Escape') { $this.Close() }
+            })
     }
 
     [void] InitializeComponent() {
@@ -152,11 +159,9 @@ class MainWindow : Window {
             $this.SizeToContent = $window.SizeToContent
             $this.Resources = $window.Resources
             
-            # Get the root grid and store it
             $rootGrid = $window.Content
             $this.Content = $rootGrid
             
-            # Helper function to find elements by name
             function Find-NamedElement {
                 param($parent, $name)
                 if ($parent.Name -eq $name) { return $parent }
@@ -168,16 +173,13 @@ class MainWindow : Window {
                 return $null
             }
             
-            # Register ProcessList
             $processList = Find-NamedElement $rootGrid 'ProcessList'
             if ($processList) {
                 $this.RegisterName('ProcessList', $processList)
             }
             
-            # Register buttons
-            $buttonNames = @('AddProcess', 'DeleteProcess', 'RescanProcesses', 
-                            'TerminateProcess', 'SaveConfig', 'ExitApp')
-            foreach ($name in $buttonNames) {
+            foreach ($name in @('AddProcess', 'DeleteProcess', 'RescanProcesses', 
+                              'TerminateProcess', 'SaveConfig', 'ExitApp')) {
                 $button = Find-NamedElement $rootGrid $name
                 if ($button) {
                     $this.RegisterName($name, $button)
@@ -222,48 +224,78 @@ class MainWindow : Window {
         }
     }
 
-    [void] ConfigureEvents() {
-        $addProcessButton = $this.FindName("AddProcess")
-        $deleteProcessButton = $this.FindName("DeleteProcess")
-        $rescanProcessesButton = $this.FindName("RescanProcesses")
-        $terminateProcessButton = $this.FindName("TerminateProcess")
-        $saveConfigButton = $this.FindName("SaveConfig")
-        $exitAppButton = $this.FindName("ExitApp")
-        $processList = $this.FindName("ProcessList")
+	[void] ConfigureEvents() {
+		$addProcessButton = $this.FindName("AddProcess")
+		$deleteProcessButton = $this.FindName("DeleteProcess")
+		$rescanProcessesButton = $this.FindName("RescanProcesses")
+		$terminateProcessButton = $this.FindName("TerminateProcess")
+		$saveConfigButton = $this.FindName("SaveConfig")
+		$exitAppButton = $this.FindName("ExitApp")
 
-        if ($addProcessButton) {
-            $addProcessButton.Add_Click({ $this.ShowAddProcessDialog() })
-        }
-        if ($deleteProcessButton) {
-            $deleteProcessButton.Add_Click({ $this.DeleteSelectedProcess() })
-        }
-        if ($rescanProcessesButton) {
-            $rescanProcessesButton.Add_Click({ $this.Monitor.RefreshProcesses() })
-        }
-        if ($terminateProcessButton) {
-            $terminateProcessButton.Add_Click({ $this.TerminateSelectedProcess() })
-        }
-        if ($saveConfigButton) {
-            $saveConfigButton.Add_Click({ $this.Monitor.SaveConfiguration() })
-        }
-        if ($exitAppButton) {
-            $exitAppButton.Add_Click({ $this.Close() })
-        }
-        
-        $this.Add_Closing({ 
-            param($sender, $e)
-            if (-not $this.IsClosing) {
-                $e.Cancel = $true
-                $this.HandleClosing()
-            }
-        })
-    }
-
-    [void] ShowAddProcessDialog() {
-        $dialog = [AddProcessDialog]::new($this.Monitor)
-        $dialog.Owner = $this
-        $dialog.ShowDialog()
-    }
+		if ($addProcessButton) {
+			$mainWindow = $this
+			$addProcessButton.Add_Click({ 
+				try {
+					$dialog = [AddProcessDialog]::new($mainWindow.Monitor)
+					$dialog.Owner = $mainWindow
+					$result = $dialog.ShowDialog()
+					if (-not $result) {
+						$mainWindow.Monitor.StatusMessage = "Process addition cancelled"
+					}
+				} catch {
+					$mainWindow.Monitor.StatusMessage = "Error adding process: $_"
+				}
+			})
+		}
+		if ($deleteProcessButton) {
+			$deleteProcessButton.Add_Click({ 
+				try {
+					$this.DeleteSelectedProcess() 
+				} catch {
+					$this.Monitor.StatusMessage = "Error deleting process: $_"
+				}
+			})
+		}
+		if ($rescanProcessesButton) {
+			$rescanProcessesButton.Add_Click({ 
+				try {
+					$this.Monitor.RefreshProcesses()
+					$this.Monitor.StatusMessage = "Process list refreshed"
+				} catch {
+					$this.Monitor.StatusMessage = "Error refreshing processes: $_"
+				}
+			})
+		}
+		if ($terminateProcessButton) {
+			$terminateProcessButton.Add_Click({ 
+				try {
+					$this.TerminateSelectedProcess()
+				} catch {
+					$this.Monitor.StatusMessage = "Error terminating process: $_"
+				}
+			})
+		}
+		if ($saveConfigButton) {
+			$saveConfigButton.Add_Click({ 
+				try {
+					$this.Monitor.SaveConfiguration()
+				} catch {
+					$this.Monitor.StatusMessage = "Error saving configuration: $_"
+				}
+			})
+		}
+		if ($exitAppButton) {
+			$exitAppButton.Add_Click({ $this.Close() })
+		}
+		
+		$this.Add_Closing({ 
+			param($sender, $e)
+			if (-not $this.IsClosing) {
+				$e.Cancel = $true
+				$this.HandleClosing()
+			}
+		})
+	}
 
     [void] DeleteSelectedProcess() {
         $selected = $this.FindName("ProcessList").SelectedItem
@@ -303,99 +335,125 @@ class MainWindow : Window {
 }
 
 class AddProcessDialog : Window {
-    hidden [ProcessMonitor]$Monitor
-    hidden [TextBox]$NameBox
-    hidden [TextBox]$IdBox
+   hidden [ProcessMonitor]$Monitor
+   hidden [TextBox]$NameBox
+   hidden [TextBox]$Process1Box
+   hidden [TextBox]$Process2Box  
+   hidden [TextBox]$Process3Box
 
-    AddProcessDialog([ProcessMonitor]$monitor) {
-        $this.Monitor = $monitor
-        $this.Title = "Add New Process"
-        $this.Width = 400
-        $this.Height = 250
-        $this.WindowStartupLocation = "CenterOwner"
-        $this.ResizeMode = "NoResize"
+   AddProcessDialog([ProcessMonitor]$monitor) {
+       $this.Monitor = $monitor
+       $this.Title = "Add New Process"
+       $this.Width = 400
+       $this.Height = 500
+       $this.WindowStartupLocation = "CenterOwner"
+       $this.ResizeMode = "NoResize"
 
-        $this.Background = New-Object SolidColorBrush($this.Monitor.Theme.Background)
+       $this.Background = New-Object SolidColorBrush([Colors]::White)
 
-        $grid = New-Object Grid
-        $grid.Margin = 15
+       $grid = New-Object Grid
+       $grid.Margin = 15
 
-        0..4 | ForEach-Object {
-            $grid.RowDefinitions.Add((New-Object RowDefinition))
-        }
-        $grid.RowDefinitions[4].Height = "*"
+       0..8 | ForEach-Object {
+           $grid.RowDefinitions.Add((New-Object RowDefinition))
+       }
+       $grid.RowDefinitions[8].Height = "*"
 
-        $nameLabel = New-Object Label
-        $nameLabel.Content = "Process Name:"
-        $nameLabel.Margin = "0,5"
-        $nameLabel.Foreground = New-Object SolidColorBrush($this.Monitor.Theme.TextColor)
-        [Grid]::SetRow($nameLabel, 0)
-        $grid.Children.Add($nameLabel)
+       # Labels with consistent black text
+       $labels = @(
+           @{ Content = "Display Name:"; Row = 0 },
+           @{ Content = "Process Name 1:"; Row = 2 },
+           @{ Content = "Process Name 2 (Optional):"; Row = 4 },
+           @{ Content = "Process Name 3 (Optional):"; Row = 6 }
+       )
 
-        $this.NameBox = New-Object TextBox
-        $this.NameBox.Margin = "0,5"
-        [Grid]::SetRow($this.NameBox, 1)
-        $grid.Children.Add($this.NameBox)
+       foreach ($labelInfo in $labels) {
+           $label = New-Object Label
+           $label.Content = $labelInfo.Content
+           $label.Margin = "0,5"
+           $label.Foreground = New-Object SolidColorBrush([Colors]::Black)
+           [Grid]::SetRow($label, $labelInfo.Row)
+           $grid.Children.Add($label)
+       }
 
-        $idLabel = New-Object Label
-        $idLabel.Content = "Process ID(s) (comma-separated):"
-        $idLabel.Margin = "0,5"
-        $idLabel.Foreground = New-Object SolidColorBrush($this.Monitor.Theme.TextColor)
-        [Grid]::SetRow($idLabel, 2)
-        $grid.Children.Add($idLabel)
+       # TextBoxes with consistent styling
+       $this.NameBox = New-Object TextBox
+       $this.Process1Box = New-Object TextBox
+       $this.Process2Box = New-Object TextBox
+       $this.Process3Box = New-Object TextBox
 
-        $this.IdBox = New-Object TextBox
-        $this.IdBox.Margin = "0,5"
-        [Grid]::SetRow($this.IdBox, 3)
-        $grid.Children.Add($this.IdBox)
+       $textBoxes = @(
+           @{ Box = $this.NameBox; Row = 1 },
+           @{ Box = $this.Process1Box; Row = 3 },
+           @{ Box = $this.Process2Box; Row = 5 },
+           @{ Box = $this.Process3Box; Row = 7 }
+       )
 
-        $buttonPanel = New-Object StackPanel
-        $buttonPanel.Orientation = "Horizontal"
-        $buttonPanel.HorizontalAlignment = "Right"
-        $buttonPanel.Margin = "0,15,0,0"
-        [Grid]::SetRow($buttonPanel, 4)
+       foreach ($boxInfo in $textBoxes) {
+           $boxInfo.Box.Margin = "0,5"
+           $boxInfo.Box.Background = New-Object SolidColorBrush([Colors]::White)
+           $boxInfo.Box.Foreground = New-Object SolidColorBrush([Colors]::Black)
+           $boxInfo.Box.BorderBrush = New-Object SolidColorBrush([Colors]::Gray)
+           [Grid]::SetRow($boxInfo.Box, $boxInfo.Row)
+           $grid.Children.Add($boxInfo.Box)
+       }
 
-        $okButton = New-Object Button
-        $okButton.Content = "OK"
-        $okButton.Width = 75
-        $okButton.Height = 25
-        $okButton.Margin = "0,0,10,0"
-        $okButton.Background = New-Object SolidColorBrush($this.Monitor.Theme.PrimaryButton)
-        $okButton.Foreground = New-Object SolidColorBrush([Colors]::White)
-        $okButton.Add_Click({ $this.AddProcess() })
+       # Button panel with improved contrast
+       $buttonPanel = New-Object StackPanel
+       $buttonPanel.Orientation = "Horizontal"
+       $buttonPanel.HorizontalAlignment = "Right"
+       $buttonPanel.Margin = "0,15,0,0"
+       [Grid]::SetRow($buttonPanel, 8)
 
-        $cancelButton = New-Object Button
-        $cancelButton.Content = "Cancel"
-        $cancelButton.Width = 75
-        $cancelButton.Height = 25
-        $cancelButton.Background = New-Object SolidColorBrush($this.Monitor.Theme.WarningButton)
-        $cancelButton.Foreground = New-Object SolidColorBrush([Colors]::White)
-        $cancelButton.Add_Click({ $this.DialogResult = $false })
+       $okButton = New-Object Button
+       $okButton.Content = "OK"
+       $okButton.Width = 75
+       $okButton.Height = 25
+       $okButton.Margin = "0,0,10,0"
+       $okButton.Background = New-Object SolidColorBrush([Colors]::DodgerBlue)
+       $okButton.Foreground = New-Object SolidColorBrush([Colors]::White)
+       $okButton.Add_Click({ $this.AddProcess() })
 
-        $buttonPanel.Children.Add($okButton)
-        $buttonPanel.Children.Add($cancelButton)
-        $grid.Children.Add($buttonPanel)
+       $cancelButton = New-Object Button
+       $cancelButton.Content = "Cancel"
+       $cancelButton.Width = 75
+       $cancelButton.Height = 25
+       $cancelButton.Background = New-Object SolidColorBrush([Colors]::LightGray)
+       $cancelButton.Foreground = New-Object SolidColorBrush([Colors]::Black)
+       $cancelButton.Add_Click({ $this.DialogResult = $false })
 
-        $this.Content = $grid
-        $this.KeyDown += {
-            param($sender, $e)
-            if ($e.Key -eq 'Enter') { $this.AddProcess() }
-            elseif ($e.Key -eq 'Escape') { $this.DialogResult = $false }
-        }
-    }
+       $buttonPanel.Children.Add($okButton)
+       $buttonPanel.Children.Add($cancelButton)
+       $grid.Children.Add($buttonPanel)
 
-    [void] AddProcess() {
-        if ($this.NameBox.Text -and $this.IdBox.Text) {
-            if (-not $this.Monitor.Categories.ContainsKey("Custom")) {
-                $this.Monitor.Categories["Custom"] = @{}
-            }
-            $this.Monitor.Categories["Custom"][$this.NameBox.Text] = $this.IdBox.Text.Split(',').Trim()
-            $this.Monitor.RefreshProcesses()
-            $this.Monitor.SaveConfiguration()
-            $this.Monitor.StatusMessage = "Process added successfully"
-            $this.DialogResult = $true
-        }
-    }
+       $this.Content = $grid
+       
+       $this.AddHandler([System.Windows.Input.Keyboard]::PreviewKeyDownEvent, 
+           [System.Windows.Input.KeyEventHandler]{
+               param($sender, $e)
+               if ($e.Key -eq 'Enter') { $this.AddProcess() }
+               elseif ($e.Key -eq 'Escape') { $this.DialogResult = $false }
+           })
+   }
+
+   [void] AddProcess() {
+       if ($this.NameBox.Text -and ($this.Process1Box.Text -or $this.Process2Box.Text -or $this.Process3Box.Text)) {            
+           if (-not $this.Monitor.Categories.ContainsKey("Custom")) {
+               $this.Monitor.Categories["Custom"] = @{}
+           }
+           
+           $processes = @($this.Process1Box.Text, $this.Process2Box.Text, $this.Process3Box.Text) | 
+                       Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+           
+           $this.Monitor.Categories["Custom"][$this.NameBox.Text] = $processes
+           $this.Monitor.RefreshProcesses()
+           $this.Monitor.SaveConfiguration()
+           $this.Monitor.StatusMessage = "Process group added successfully"
+           $this.DialogResult = $true
+       } else {
+           $this.Monitor.StatusMessage = "Please enter a name and at least one process"
+       }
+   }
 }
 
 try {

@@ -21,26 +21,19 @@ function Create-DefaultConfiguration {
         }
     }
 
-    # Define the default configuration as a string
     $defaultConfig = @"
 @{
     Categories = @{
-        Games = @{
-            'Fallout (3/NV/4)' = @('f4se_loader', 'Fallout4', 'Fallout4Launcher', 'Fallout3', 'FalloutNV')
-            'Skyrim (Legacy/SE)' = @('Skyrim', 'SkyrimSE')
+        Custom = @{
+            'Fallout' = @('f4se_loader', 'Fallout4', 'Fallout4Launcher', 'Fallout3', 'FalloutNV')
+            'Skyrim' = @('Skyrim', 'SkyrimSE')
+            'PaintShop' = @('Paint Shop Pro 9', 'Paint Shop Pro 8', 'Corel PaintShop Pro')
+            'ChatGPT' = @('ChatGPT')
         }
-        Media = @{
-            'PaintShop Pro (Corel/Jasc)' = @('Paint Shop Pro 9', 'Paint Shop Pro 8', 'Corel PaintShop Pro')
-        }
-        AI = @{
-            'ChatGPT (LenX)' = @('ChatGPT')
-        }
-        Custom = @{}
     }
 }
 "@
 
-    # Write the configuration to the file
     Set-Content -Path $configPath -Value $defaultConfig -Force
     Write-Host "Configuration initialized successfully!" -ForegroundColor Green
 }
