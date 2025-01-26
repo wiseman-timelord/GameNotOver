@@ -60,44 +60,21 @@ function Import-PowerShellData1 {
 
 function Export-PowerShellData1 {
     param (
-        [Parameter(Mandatory = $true)]
-        [hashtable]$Data,
-        [Parameter(Mandatory = $true)]
-        [string]$Path,
-        [switch]$Name
+        [Parameter(Mandatory)][hashtable]$Data,
+        [Parameter(Mandatory)][string]$Path
     )
-    function ConvertTo-Psd1Content {
-        param ($Value)
-        switch ($Value) {
-            { $_ -is [System.Collections.Hashtable] } {
-                "@{" + ($Value.GetEnumerator() | ForEach-Object {
-                    "`n    $($_.Key) = $(ConvertTo-Psd1Content $_.Value)"
-                }) -join ";" + "`n}" + "`n"
-            }
-            { $_ -is [System.Collections.IEnumerable] -and $_ -isnot [string] } {
-                "@(" + ($Value | ForEach-Object {
-                    ConvertTo-Psd1Content $_
-                }) -join ", " + ")"
-            }
-            { $_ -is [PSCustomObject] } {
-                $hashTable = @{}
-                $_.psobject.properties | ForEach-Object { $hashTable[$_.Name] = $_.Value }
-                ConvertTo-Psd1Content $hashTable
-            }
-            { $_ -is [string] } { "`"$Value`"" }
-            { $_ -is [int] -or $_ -is [long] -or $_ -is [bool] -or $_ -is [double] -or $_ -is [decimal] } { $_ }
-            default { 
-                "`"$Value`"" 
-            }
+    $psd1Content = "@{`n"
+    foreach ($key in $Data.Keys) {
+        $psd1Content += "    $key = @{`n"
+        foreach ($subKey in $Data[$key].Keys) {
+            $psd1Content += "        $subKey = @("
+            # Properly format each process name as a string
+            $processList = $Data[$key][$subKey] | ForEach-Object { "'$_'" }
+            $psd1Content += $processList -join ", "
+            $psd1Content += ")`n"
         }
+        $psd1Content += "    }`n"
     }
-    $fileName = if ($Name) { Split-Path $Path -Leaf } else { $null }
-    $psd1Content = if ($fileName) { "# Script: $fileName`n`n" } else { "" }
-    $psd1Content += "@{" + ($Data.GetEnumerator() | ForEach-Object {
-        "`n    $($_.Key) = $(ConvertTo-Psd1Content $_.Value)"
-    }) -join ";" + "`n" + "}"
-    if (-not $psd1Content.EndsWith("}")) {
-        $psd1Content += "`n}"
-    }
+    $psd1Content += "}"
     Set-Content -Path $Path -Value $psd1Content -Force
 }
