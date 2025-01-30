@@ -23,14 +23,12 @@ function Create-DefaultConfiguration {
 
     $defaultConfig = @"
 @{
-    Categories = @{
-        Custom = @{
-            'Fallout' = @('f4se_loader', 'Fallout4', 'Fallout4Launcher', 'Fallout3', 'FalloutNV')
-            'Skyrim' = @('Skyrim', 'SkyrimSE')
-            'PaintShop' = @('Paint Shop Pro 9', 'Paint Shop Pro 8', 'Corel PaintShop Pro')
-            'ChatGPT' = @('ChatGPT')
-        }
-    }
+    'Fallout' = @('f4se_loader', 'Fallout4', 'Fallout4Launcher', 'Fallout3', 'FalloutNV')
+    'Skyrim' = @('Skyrim', 'SkyrimSE')
+    'PaintShop' = @('Paint Shop Pro 9', 'Paint Shop Pro 8', 'Corel PaintShop Pro')
+    'ChatGPT' = @('ChatGPT')
+    'Edge' = @('msedgewebview2', 'MicrosoftEdgeUpdate')
+    'Brave' = @('brave', 'BraveCrashHandler', 'BraveCrashHandler64')
 }
 "@
 

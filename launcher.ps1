@@ -5,14 +5,19 @@ $DebugPreference = 'Continue'
 try {
     Add-Type -AssemblyName PresentationFramework
     
-    $scriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
-    Set-Location $scriptPath
-    
-    if (-not (Test-Path ".\scripts\interface.ps1")) {
-        throw "Required interface script not found."
+    # Get absolute paths
+    $scriptRoot = $PSScriptRoot
+    if (-not $scriptRoot) {
+        $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
     }
     
-    & ".\scripts\interface.ps1"
+    $interfacePath = Join-Path $scriptRoot "scripts\interface.ps1"
+    if (-not (Test-Path $interfacePath)) {
+        throw "Required interface script not found at: $interfacePath"
+    }
+    
+    # Source the interface script
+    . $interfacePath
 } catch {
     Write-Host "Error: $($_.Exception.Message)" -ForegroundColor Red
     Write-Debug ($_ | Format-List -Force | Out-String)
