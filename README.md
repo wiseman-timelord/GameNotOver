@@ -2,10 +2,11 @@
 ### Status: Updating, below is the readme to the next version, it will be UPGRADED. For now the releases are the working but are non-GUI versions.
 
 ### Development
--  A revisit of a early program, to figure out GUI issues with a simpler program first. The plan is to have a GUI using WPF...
-1. The WPF GUI loads without error (see pictures), now need to test features, and bugfixing.
-2. Editing entries will require to be able, to input 2-3 entries of processes per name of an item, to maintain the current effective method of configuration, ie, its not 1 process name per item, and it needs to be checked it is correctly going to close all relevant process names when the item is selected.
-2. When working correctly, then make launcher self-destruct after launching, for clean operation, or do so in a `.\QuickLaunch.bat`, that can then be added to a shortcut on the taskbar if done correctly with the `cmd /c "exampleFullPath"` in the target box.
+-  A revisit of a earlier program, to, improve, update, and upgrade... 
+1. Figured out WPF GUI with a simpler program, it can be done but its a battle, thus, the interface script will become example for assisting in AI programming of other windows powershell scripts I work on.
+2. The WPF GUI loads without error (see pictures), and now some buttons work, must complete all buttons.
+3. Editing entries will require to be able, to input 1-3 entries of processes per item, it correctly closes all process relevant to selected item. 
+4. When working correctly, then make launcher self-destruct after launching, for clean operation, or do so in a `.\QuickLaunch.bat`, that can then be added to a shortcut on the taskbar if done correctly with the `cmd /c "exampleFullPath"` in the target box.
 
 ### Files list...
 - Package files...
@@ -21,9 +22,9 @@
 - Created by installer...
 ```
 ├── data\  # Data folder.
-│   └── persistent.psd1  # Persistent configuration, created from default by installer.
+│   └── persistent.psd1  # Persistent configuration, the psd1 uses flat hashtable.
 ```
-
+ 
 ### Description:
 GameNotOver is a PowerShell application tailored for Windows users, enabling them to forcefully close all instances of selected programs through an GUI. When using programs in windows 10, upon, exiting or crashing, some programs may leave a residual 500MB-4GB, that, lock files in place or prevent loading, for example, beta or old, software, which may even cause issues, running the program again and/or shutting down the system. My application is a manageable shortlist for closing all instances of pre-selected troublesome programs of your choice, thus, saving on repeatingly, running task manager and searching for running processes, each time.
 
