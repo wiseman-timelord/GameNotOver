@@ -77,25 +77,26 @@ class ProcessMonitor : ViewModelBase {
         $this.LoadConfiguration()
     }
 
-	[void] LoadConfiguration() {
-		try {
-			Write-Debug "Loading configuration..."
-			$this.Config = Import-GameConfiguration
-			
-			if (-not $this.Config) {
-				Write-Debug "No configuration found, creating default"
-				$this.Config = @{}
-			}
-			
-			$this.set_StatusMessage("Configuration loaded successfully")
-			$this.RefreshProcesses()
-		} catch {
-			Write-Debug ("Error loading configuration: {0}" -f $_)
-			$this.Config = @{}
-			$this.set_StatusMessage(("Error loading configuration: {0}" -f $_))
-			$this.RefreshProcesses()
-		}
-	}
+    [void] LoadConfiguration() {
+        try {
+            Write-Debug "Loading configuration..."
+            $this.Config = Import-GameConfiguration
+            
+            if (-not $this.Config) {
+                Write-Debug "No configuration found, creating empty hashtable"
+                $this.Config = @{}
+            }
+            
+            $this.set_StatusMessage("Configuration loaded successfully")
+            $this.RefreshProcesses()
+        }
+        catch {
+            Write-Debug ("Error loading configuration: {0}" -f $_)
+            $this.Config = @{}
+            $this.set_StatusMessage(("Error loading configuration: {0}" -f $_))
+            $this.RefreshProcesses()
+        }
+    }
 
 	[void] SaveConfiguration() {
 		try {
@@ -109,34 +110,34 @@ class ProcessMonitor : ViewModelBase {
 		}
 	}
 
-	[void] RefreshProcesses() {
-		Write-Debug "Refreshing processes..."
-		$this.ProcessItems.Clear()
-		$this.Window.Cursor = [System.Windows.Input.Cursors]::Wait
-		
-		try {
-			if (-not $this.Config) {
-				Write-Debug "No configuration found"
-				return
-			}
-			
-			Write-Debug ("Groups found: {0}" -f ($this.Config.Keys -join ', '))
-			foreach ($name in $this.Config.Keys | Sort-Object) {
-				Write-Debug ("Processing {0}..." -f $name)
-				$count = Get-ProcessCount -ProcessNames $this.Config[$name]
-				Write-Debug ("Found {0} processes for {1}" -f $count, $name)
-				$this.ProcessItems.Add(("{0} ({1} running)" -f $name, $count))
-			}
-			$this.set_StatusMessage("Process list updated")
-		}
-		catch {
-			Write-Debug ("Error refreshing processes: {0}" -f $_)
-			$this.set_StatusMessage(("Error refreshing processes: {0}" -f $_))
-		}
-		finally {
-			$this.Window.Cursor = [System.Windows.Input.Cursors]::Arrow
-		}
-	}
+    [void] RefreshProcesses() {
+        Write-Debug "Refreshing processes..."
+        $this.ProcessItems.Clear()
+        $this.Window.Cursor = [System.Windows.Input.Cursors]::Wait
+        
+        try {
+            if (-not $this.Config -or $this.Config.Count -eq 0) {
+                Write-Debug "Empty configuration"
+                $this.set_StatusMessage("No processes configured")
+                return
+            }
+            
+            foreach ($name in $this.Config.Keys | Sort-Object) {
+                Write-Debug ("Processing {0}..." -f $name)
+                $processNames = $this.Config[$name]
+                $count = Get-ProcessCount -ProcessNames $processNames
+                $this.ProcessItems.Add(("{0} ({1} running)" -f $name, $count))
+            }
+            $this.set_StatusMessage("Process list updated successfully")
+        }
+        catch {
+            Write-Debug ("Error refreshing processes: {0}" -f $_)
+            $this.set_StatusMessage(("Error refreshing processes: {0}" -f $_))
+        }
+        finally {
+            $this.Window.Cursor = [System.Windows.Input.Cursors]::Arrow
+        }
+    }
 
 	[void] TerminateProcess($selected) {
 		if ($selected -match '^(.+?)\s+\(\d+\s+running\)$') {
@@ -300,7 +301,7 @@ class MainWindow : Window {
 
 		# Store reference to this for use in event handlers
 		$mainWindow = $this
-
+		
 		if ($rescanProcessesButton) {
 			$rescanProcessesButton.Add_Click({
 				try {
@@ -316,68 +317,71 @@ class MainWindow : Window {
 						$mainWindow.Monitor.set_StatusMessage("Error refreshing processes: $($_.Exception.Message)")
 					}
 				}
-			})
+			}.GetNewClosure())
 		}
-        if ($deleteProcessButton) {
-            $deleteProcessButton.Add_Click({ 
-                try {
-                    $this.DeleteSelectedProcess() 
-                } catch {
-                    $this.Monitor.set_StatusMessage(("Error deleting process: {0}" -f $_))
-                }
-            })
-        }
-		if ($rescanProcessesButton) {
-			$rescanProcessesButton.Add_Click({ 
+		
+		if ($deleteProcessButton) {
+			$deleteProcessButton.Add_Click({ 
 				try {
-					if ($this.Monitor) {
-						$this.Monitor.RefreshProcesses()
-					} else {
-						Write-Warning "Monitor not initialized"
-					}
+					$mainWindow.DeleteSelectedProcess() 
 				} catch {
-					Write-Debug "Error in refresh: $_"
-					if ($this.Monitor) {
-						$this.Monitor.set_StatusMessage("Error refreshing processes: $($_.Exception.Message)")
+					$mainWindow.Monitor.set_StatusMessage(("Error deleting process: {0}" -f $_))
+				}
+			}.GetNewClosure())
+		}
+
+		if ($addProcessButton) {
+			$addProcessButton.Add_Click({
+				try {
+					$dialog = [AddProcessDialog]::new($mainWindow.Monitor)
+					$dialog.Owner = $mainWindow
+					if ($dialog.ShowDialog()) {
+						$mainWindow.Monitor.RefreshProcesses()
 					}
 				}
-			})
+				catch {
+					$mainWindow.Monitor.set_StatusMessage(("Error adding process: {0}" -f $_))
+				}
+			}.GetNewClosure())
 		}
-        if ($terminateProcessButton) {
-            $terminateProcessButton.Add_Click({ 
-                try {
-                    $this.TerminateSelectedProcess()
-                } catch {
-                    $this.Monitor.set_StatusMessage(("Error terminating process: {0}" -f $_))
-                }
-            })
-        }
-        
-        $this.Add_Closing({ 
-            param($sender, $e)
-            if (-not $this.IsClosing) {
-                $e.Cancel = $true
-                $this.HandleClosing()
-            }
-        })
-    }
 
-	[void] DeleteSelectedProcess() {
-		$selected = $this.FindName("ProcessList").SelectedItem
-		if ($selected -match '^(.+?) \(\d+') {
-			try {
-				$name = $matches[1]
-				$this.Monitor.Config.Remove($name)
-				$this.Monitor.RefreshProcesses()
-				$this.Monitor.SaveConfiguration()
-				$this.Monitor.set_StatusMessage(("Process '{0}' removed successfully" -f $name))
-			} catch {
-				$this.Monitor.set_StatusMessage(("Error removing process: {0}" -f $_))
-			}
-		} else {
-			$this.Monitor.set_StatusMessage("No process selected")
+		if ($terminateProcessButton) {
+			$terminateProcessButton.Add_Click({ 
+				try {
+					$mainWindow.TerminateSelectedProcess()
+				} catch {
+					$mainWindow.Monitor.set_StatusMessage(("Error terminating process: {0}" -f $_))
+				}
+			}.GetNewClosure())
 		}
+		
+		$this.Add_Closing({ 
+			param($sender, $e)
+			if (-not $this.IsClosing) {
+				$e.Cancel = $true
+				$this.HandleClosing()
+			}
+		})
 	}
+
+    [void] DeleteSelectedProcess() {
+        $selected = $this.FindName("ProcessList").SelectedItem
+        if ($selected -match '^(.+?) \(\d+') {
+            try {
+                $name = $matches[1]
+                $this.Monitor.Config.Remove($name)
+                $this.Monitor.RefreshProcesses()
+                $this.Monitor.SaveConfiguration()
+                $this.Monitor.set_StatusMessage(("Process group '{0}' removed successfully" -f $name))
+            }
+            catch {
+                $this.Monitor.set_StatusMessage(("Error removing process group: {0}" -f $_))
+            }
+        }
+        else {
+            $this.Monitor.set_StatusMessage("No process group selected")
+        }
+    }
 
     [void] TerminateSelectedProcess() {
         $selected = $this.FindName("ProcessList").SelectedItem
@@ -522,57 +526,63 @@ class AddProcessDialog : Window {
             })
     }
 
-	[void] ValidateAndAdd() {
-		# Get actual text (ignore watermarks)
-		$displayName = if ($this.NameBox.Text -eq $this.NameBox.Tag) { "" } else { $this.NameBox.Text.Trim() }
-		$process1 = if ($this.Process1Box.Text -eq $this.Process1Box.Tag) { "" } else { $this.Process1Box.Text.Trim() }
-		$process2 = if ($this.Process2Box.Text -eq $this.Process2Box.Tag) { "" } else { $this.Process2Box.Text.Trim() }
-		$process3 = if ($this.Process3Box.Text -eq $this.Process3Box.Tag) { "" } else { $this.Process3Box.Text.Trim() }
+    [void] ValidateAndAdd() {
+        # Get actual text (ignore watermarks)
+        $displayName = if ($this.NameBox.Text -eq $this.NameBox.Tag) { "" } else { $this.NameBox.Text.Trim() }
+        $process1 = if ($this.Process1Box.Text -eq $this.Process1Box.Tag) { "" } else { $this.Process1Box.Text.Trim() }
+        $process2 = if ($this.Process2Box.Text -eq $this.Process2Box.Tag) { "" } else { $this.Process2Box.Text.Trim() }
+        $process3 = if ($this.Process3Box.Text -eq $this.Process3Box.Tag) { "" } else { $this.Process3Box.Text.Trim() }
 
-		# Validation
-		if ([string]::IsNullOrWhiteSpace($displayName)) {
-			$this.Monitor.set_StatusMessage("Please enter a display name")
-			$this.NameBox.Focus()
-			return
-		}
+        # Validation
+        if ([string]::IsNullOrWhiteSpace($displayName)) {
+            $this.Monitor.set_StatusMessage("Please enter a display name")
+            $this.NameBox.Focus()
+            return
+        }
 
-		if ([string]::IsNullOrWhiteSpace($process1) -and 
-			[string]::IsNullOrWhiteSpace($process2) -and 
-			[string]::IsNullOrWhiteSpace($process3)) {
-			$this.Monitor.set_StatusMessage("Please enter at least one process name")
-			$this.Process1Box.Focus()
-			return
-		}
+        if ([string]::IsNullOrWhiteSpace($process1) -and 
+            [string]::IsNullOrWhiteSpace($process2) -and 
+            [string]::IsNullOrWhiteSpace($process3)) {
+            $this.Monitor.set_StatusMessage("Please enter at least one process name")
+            $this.Process1Box.Focus()
+            return
+        }
 
-		# Check for duplicate display name
-		if ($this.Monitor.Config.ContainsKey($displayName)) {
-			$this.Monitor.set_StatusMessage(("Process group '{0}' already exists" -f $displayName))
-			$this.NameBox.Focus()
-			return
-		}
+        # Check for duplicate display name
+        if ($this.Monitor.Config.ContainsKey($displayName)) {
+            $this.Monitor.set_StatusMessage(("Process group '{0}' already exists" -f $displayName))
+            $this.NameBox.Focus()
+            return
+        }
 
-		# Validate process names
-		$processes = @($process1, $process2, $process3) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
-		foreach ($proc in $processes) {
-			# Allow alphanumeric, dots, hyphens, and spaces in process names
-			if ($proc -notmatch '^[a-zA-Z0-9\s\._-]+$') {
-				$this.Monitor.set_StatusMessage(("Invalid process name (only letters, numbers, spaces, dots, and hyphens allowed): '{0}'" -f $proc))
-				return
-			}
-			# Check length
-			if ($proc.Length -gt 260) {  # Windows MAX_PATH
-				$this.Monitor.set_StatusMessage(("Process name too long: '{0}'" -f $proc))
-				return
-			}
-		}
-
-		# Add to configuration
-		$this.Monitor.Config[$displayName] = $processes
-		$this.Monitor.RefreshProcesses()
-		$this.Monitor.SaveConfiguration()
-		$this.Monitor.set_StatusMessage(("Process group '{0}' added successfully" -f $displayName))
-		$this.DialogResult = $true
-	}
+        try {
+            # Get non-empty process names
+            $processes = @($process1, $process2, $process3) | 
+                        Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+            
+            # Validate each process name
+            foreach ($proc in $processes) {
+                if ($proc -notmatch '^[\w\s\.-]+$') {
+                    $this.Monitor.set_StatusMessage(("Invalid process name (only letters, numbers, spaces, dots, hyphens allowed): '{0}'" -f $proc))
+                    return
+                }
+                if ($proc.Length -gt 260) {
+                    $this.Monitor.set_StatusMessage(("Process name too long: '{0}'" -f $proc))
+                    return
+                }
+            }
+            
+            # Add to configuration
+            $this.Monitor.Config[$displayName] = $processes
+            $this.Monitor.RefreshProcesses()
+            $this.Monitor.SaveConfiguration()
+            $this.Monitor.set_StatusMessage(("Process group '{0}' added successfully" -f $displayName))
+            $this.DialogResult = $true
+        }
+        catch {
+            $this.Monitor.set_StatusMessage(("Failed to add process group: {0}" -f $_.Exception.Message))
+        }
+    }
 }
 
 try {

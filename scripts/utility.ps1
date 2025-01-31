@@ -7,7 +7,7 @@ function Import-GameConfiguration {
     
     if (-not (Test-Path $Path)) { 
         Write-Warning "Configuration file not found: $Path"
-        return @{}  # Changed from Categories structure
+        return @{}
     }
     
     try {
@@ -21,11 +21,15 @@ function Import-GameConfiguration {
             throw "Invalid configuration format"
         }
         
-        # Validate process arrays
+        # Validate flat hashtable structure
+        if ($config -isnot [hashtable]) {
+            throw "Configuration must be a hashtable"
+        }
+        
+        # Validate each entry is an array of process names
         foreach ($key in $config.Keys) {
-            $processes = $config[$key]
-            if ($processes -isnot [array]) {
-                throw "Invalid process list format for $key"
+            if ($config[$key] -isnot [array]) {
+                throw "Process list for '$key' must be an array"
             }
         }
         
@@ -33,7 +37,7 @@ function Import-GameConfiguration {
     } 
     catch {
         Write-Warning "Configuration validation failed: $_"
-        return @{}  # Changed from Categories structure
+        return @{}
     }
 }
 
@@ -44,13 +48,24 @@ function Save-GameConfiguration {
     )
     
     try {
-        # Ensure directory exists
+        # Validate flat hashtable structure before saving
+        if ($Config -isnot [hashtable]) {
+            throw "Configuration must be a hashtable"
+        }
+        
+        foreach ($key in $Config.Keys) {
+            if ($Config[$key] -isnot [array]) {
+                throw "Process list for '$key' must be an array"
+            }
+        }
+        
+        # Directory handling
         $configDir = Split-Path -Parent $Path
         if (-not (Test-Path $configDir)) {
             New-Item -ItemType Directory -Path $configDir -Force | Out-Null
         }
         
-        # Create backup before saving
+        # Backup
         $backupPath = "$Path.backup"
         if (Test-Path $Path) {
             Copy-Item -Path $Path -Destination $backupPath -Force
@@ -58,104 +73,23 @@ function Save-GameConfiguration {
         
         Export-PowerShellData1 -Data $Config -Path $Path
         
-        # Verify the saved file
+        # Verify saved file
         $testImport = Import-GameConfiguration -Path $Path
-        if (-not $testImport -or -not $testImport.Categories) {
+        if (-not $testImport) {
             throw "Configuration verification failed"
         }
         
-        # Remove backup on success
         if (Test-Path $backupPath) {
             Remove-Item $backupPath -Force
         }
     }
     catch {
-        # Restore from backup on failure
         if (Test-Path $backupPath) {
             Copy-Item -Path $backupPath -Destination $Path -Force
             Remove-Item $backupPath -Force
         }
         throw "Failed to save configuration: $_"
     }
-}
-
-function Get-ProcessCount {
-    param (
-        [Parameter(Mandatory)][string[]]$ProcessNames
-    )
-    
-    $count = 0
-    Write-Debug "Checking processes: $($ProcessNames -join ', ')"
-    
-    foreach ($name in $ProcessNames) {
-        if ([string]::IsNullOrWhiteSpace($name)) { continue }
-        
-        try {
-            # Clean the name
-            $cleanName = $name -replace '\.exe$', ''
-            Write-Debug "Checking for process: $cleanName"
-            
-            $processes = Get-Process -Name $cleanName -ErrorAction SilentlyContinue
-            if ($processes) {
-                $currentCount = @($processes).Count
-                Write-Debug "Found $currentCount instance(s) of $cleanName"
-                $count += $currentCount
-            }
-        }
-        catch {
-            Write-Debug "Error counting process '$name': $_"
-        }
-    }
-    
-    Write-Debug "Total count for $($ProcessNames -join ', '): $count"
-    return $count
-}
-
-function Stop-GameProcesses {
-    param (
-        [Parameter(Mandatory)][string[]]$ProcessNames
-    )
-    
-    $terminated = $false
-    $errors = @()
-    
-    foreach ($name in $ProcessNames) {
-        if ([string]::IsNullOrWhiteSpace($name)) { continue }
-        
-        try {
-            $procs = Get-Process -Name $name -ErrorAction Stop
-            foreach ($proc in $procs) {
-                try {
-                    # Skip system processes
-                    if ($proc.SessionId -eq 0) {
-                        $errors += "Skipped system process $($proc.Name) (PID: $($proc.Id))"
-                        continue
-                    }
-                    
-                    $proc | Stop-Process -Force -ErrorAction Stop
-                    $terminated = $true
-                }
-                catch {
-                    $errors += "Failed to stop process $($proc.Name) (PID: $($proc.Id)): $_"
-                }
-            }
-        }
-        catch [Microsoft.PowerShell.Commands.ProcessCommandException] {
-            # Process not found - silent continue
-            continue
-        }
-        catch {
-            if ($_.Exception.Message -notmatch 'Cannot find a process') {
-                $errors += "Error accessing process '$name': $_"
-            }
-        }
-    }
-    
-    if ($errors) {
-        Write-Warning ($errors -join "`n")
-    }
-    
-    return $terminated
 }
 
 function Import-PowerShellData1 {
@@ -202,9 +136,12 @@ function Export-PowerShellData1 {
         foreach ($key in $Data.Keys | Sort-Object) {
             $value = $Data[$key]
             if ($value -is [array]) {
-                $psd1Content += "    '$key' = @("
+                $psd1Content += "    '$($key -replace "'", "''")' = @("
                 $processList = $value | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | 
-                                       ForEach-Object { "'$($_ -replace "'", "''")'" }
+                                     ForEach-Object { 
+                                         $escapedName = $_ -replace "'", "''"
+                                         "'$escapedName'"
+                                     }
                 $psd1Content += $processList -join ", "
                 $psd1Content += ")`n"
             }
@@ -218,4 +155,88 @@ function Export-PowerShellData1 {
     catch {
         throw "Failed to export configuration: $_"
     }
+}
+
+function Stop-GameProcesses {
+    param (
+        [Parameter(Mandatory)][string[]]$ProcessNames
+    )
+    
+    $terminated = $false
+    $errors = @()
+    
+    foreach ($name in $ProcessNames) {
+        if ([string]::IsNullOrWhiteSpace($name)) { continue }
+        
+        try {
+            # Clean process name by removing .exe if present
+            $cleanName = $name -replace '\.exe$', ''
+            $procs = Get-Process -Name $cleanName -ErrorAction Stop
+            
+            foreach ($proc in $procs) {
+                try {
+                    # Skip system processes and validate session
+                    if ($proc.SessionId -eq 0 -or $proc.Id -eq $PID) {
+                        $errors += "Skipped protected process $($proc.Name) (PID: $($proc.Id))"
+                        continue
+                    }
+                    
+                    $proc | Stop-Process -Force -ErrorAction Stop
+                    $terminated = $true
+                    Write-Debug "Successfully terminated $($proc.Name) (PID: $($proc.Id))"
+                }
+                catch {
+                    $errors += "Failed to stop process $($proc.Name) (PID: $($proc.Id)): $_"
+                }
+            }
+        }
+        catch [Microsoft.PowerShell.Commands.ProcessCommandException] {
+            # Process not found - silent continue
+            Write-Debug "Process not found: $cleanName"
+            continue
+        }
+        catch {
+            if ($_.Exception.Message -notmatch 'Cannot find a process') {
+                $errors += "Error accessing process '$name': $_"
+            }
+        }
+    }
+    
+    if ($errors) {
+        Write-Warning ($errors -join "`n")
+    }
+    
+    return $terminated
+}
+
+function Get-ProcessCount {
+    param (
+        [Parameter(Mandatory)][string[]]$ProcessNames
+    )
+    
+    $count = 0
+    Write-Debug "Checking processes: $($ProcessNames -join ', ')"
+    
+    foreach ($name in $ProcessNames) {
+        if ([string]::IsNullOrWhiteSpace($name)) { continue }
+        
+        try {
+            # Clean the name
+            $cleanName = $name -replace '\.exe$', ''
+            Write-Debug "Checking for process: $cleanName"
+            
+            $processes = Get-Process -Name $cleanName -ErrorAction SilentlyContinue
+            if ($processes) {
+                $currentCount = @($processes).Count
+                Write-Debug "Found $currentCount instance(s) of $cleanName"
+                $count += $currentCount
+            }
+        }
+        catch {
+            Write-Debug "Error counting process '$name': $_"
+        }
+    }
+    
+    Write-Debug "Total count for $($ProcessNames -join ', '): $count"
+    return $count
 }
